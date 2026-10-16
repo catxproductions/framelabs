@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a1220">
+<meta name="description" content="FrameLab is an interactive educational 2D structural sandbox for building frames, exploring support paths, and observing simplified collapse and impact behavior.">
+<meta name="color-scheme" content="dark">
+<title>FrameLab — Structural Sandbox</title>
+<style>
+:root{color-scheme:dark;--bg:#0a1220;--panel:#111d2e;--panel2:#17253a;--line:#263751;--ink:#edf4ff;--muted:#9aabc3;--cyan:#43d7d0;--blue:#4b9eff;--gold:#ffca69;--red:#ff6578;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 16% -15%,rgba(50,94,143,.22),transparent 42%),var(--bg);padding:20px}main{width:min(1380px,100%);margin:0 auto}.topline{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}.brand{display:flex;align-items:center;gap:12px}.brand-mark{width:40px;height:40px;flex:0 0 40px;border-radius:12px;display:grid;place-items:center;color:#06131d;font-weight:900;font-size:20px;background:linear-gradient(145deg,#70e9df,#49a9fa);box-shadow:0 5px 22px rgba(67,215,208,.16)}h1{font-size:clamp(20px,3vw,27px);letter-spacing:-.04em;margin:0}.eyebrow{color:var(--muted);font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px}.badge{border:1px solid #31506c;border-radius:999px;color:#b5d6f2;padding:7px 11px;font-size:10px;white-space:normal;text-align:center;background:rgba(35,67,94,.28)}
+.panel,.stage,.readout,.notice{background:linear-gradient(160deg,rgba(20,33,51,.98),rgba(14,25,40,.98));border:1px solid var(--line);border-radius:15px;box-shadow:0 14px 45px rgba(0,0,0,.16)}.panel{padding:13px;margin-bottom:12px}.toolbar{display:grid;grid-template-columns:1.2fr 1.25fr 1fr 1.6fr;gap:12px}.group{border:1px solid rgba(105,133,166,.2);border-radius:11px;padding:10px;min-width:0}.group-title{color:var(--muted);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}.button-row{display:flex;flex-wrap:wrap;gap:6px}.field{min-width:0;margin-bottom:8px}.field:last-child{margin-bottom:0}label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;color:#c7d4e7;font-size:11px;margin-bottom:6px}select,button,input{font:inherit;color:var(--ink);border:1px solid #354b68;border-radius:8px;background:#142237;min-height:34px}select{width:100%;padding:0 9px;font-size:12px}input[type=range]{width:100%;accent-color:var(--cyan)}button{cursor:pointer;padding:0 10px;font-size:11px;transition:border-color .14s,transform .14s}button:hover{border-color:#73d8dc;transform:translateY(-1px)}button.active,button.primary{color:#06151c;border-color:transparent;font-weight:750;background:linear-gradient(135deg,#70e7dd,#5db4ff)}button.secondary{background:#1b2a41}button.danger{border-color:#75404c;color:#ffc4cc;background:#34202c}.toolbar button{min-height:32px}.toolbar .button-row button{flex:1}.action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.action-grid button{min-height:36px}.stage{overflow:hidden}.stage-head{min-height:48px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line)}.scenario-name{display:flex;align-items:center;gap:9px;font-weight:650;font-size:13px}.live-dot{width:8px;height:8px;border-radius:50%;background:#8ca0ba;box-shadow:0 0 0 4px rgba(140,160,186,.12)}.live-dot.running{background:#5de0b3;box-shadow:0 0 0 4px rgba(93,224,179,.12),0 0 12px #5de0b3}.view-control{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px}.view-control select{min-height:30px;width:auto}.canvas-wrap{position:relative;background:#09111d}canvas{display:block;width:100%;height:auto;aspect-ratio:1100/680;touch-action:none;cursor:crosshair}.canvas-tip{position:absolute;left:12px;bottom:11px;pointer-events:none;color:#9eb1c8;font-size:10px;background:rgba(8,16,27,.82);padding:6px 8px;border-radius:6px;max-width:70%}.legend{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:10px 14px;color:var(--muted);font-size:10px;border-top:1px solid var(--line)}.gradient{width:118px;height:7px;border-radius:10px;background:linear-gradient(90deg,#4b9eff,#45d5c5,#b7e06d,#ffd05a,#ff6578)}.legend-spacer{flex:1}.readout{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));overflow:hidden;margin-top:12px}.metric{padding:12px 14px;min-width:0}.metric+.metric{border-left:1px solid var(--line)}.metric-title{color:var(--muted);font-size:10px;letter-spacing:.09em;text-transform:uppercase}.metric-value{margin-top:5px;font-size:19px;line-height:1.1;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.metric-sub{color:#8295ae;margin-top:4px;font-size:10px;line-height:1.35}.feedback{margin-top:12px;border:1px solid var(--line);background:rgba(17,29,46,.78);border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:1.15fr 1fr;gap:12px}.feedback h2{margin:0 0 6px;font-size:12px}.feedback p{margin:0;font-size:11px;line-height:1.5;color:#a9bad0}.feedback .result{font-weight:700;color:var(--cyan)}.notice{margin-top:12px;padding:12px 15px;display:flex;gap:10px;align-items:flex-start;color:#a9bad0;font-size:11px;line-height:1.55}.notice strong{color:#e9c77e}.notice-icon{color:var(--gold);font-size:15px;line-height:1.2}.explain{padding:10px 3px 0;color:#8fa2bb;font-size:10px;line-height:1.6}.hidden{display:none!important}
+@media(max-width:1000px){.toolbar{grid-template-columns:1fr 1fr}.readout{grid-template-columns:repeat(3,minmax(0,1fr))}.metric:nth-child(4){border-left:0;border-top:1px solid var(--line)}.metric:nth-child(5){border-top:1px solid var(--line)}.metric:nth-child(6){border-top:1px solid var(--line)}}@media(max-width:650px){body{padding:10px}.topline{align-items:stretch;flex-direction:column;gap:10px}.brand{min-width:0}.brand>div:last-child{min-width:0}.badge{max-width:none;width:100%;font-size:9px;text-align:left}.toolbar{grid-template-columns:1fr}.readout{grid-template-columns:repeat(2,minmax(0,1fr))}.metric:nth-child(odd){border-left:0}.metric:nth-child(n+3){border-top:1px solid var(--line)}.feedback{grid-template-columns:1fr}.stage-head{align-items:flex-start}.view-control{align-items:flex-end;flex-direction:column}}
+
+/* Brand integration: keep the uploaded logo crisp on desktop and mobile. */
+.brand-logo{display:block;width:60px;height:60px;flex:0 0 60px;object-fit:contain;border-radius:50%;filter:drop-shadow(0 5px 14px rgba(91,57,190,.28))}
+.brand-mark.brand-mark-fallback{width:60px;height:60px;flex:0 0 60px;border-radius:50%;font-size:23px}
+@media(max-width:650px){.brand-logo,.brand-mark.brand-mark-fallback{width:52px;height:52px;flex-basis:52px}}
+
+/* Release polish: clear focus, predictable button sizing, and mobile-safe controls. */
+:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+button{line-height:1.25;white-space:normal}
+button:active{transform:translateY(0)}
+.action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.action-grid button{padding:7px 8px;min-height:37px}
+.group-title{font-weight:700}
+.feedback p{overflow-wrap:anywhere}
+@media(max-width:1000px){.action-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){.action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stage-head{flex-wrap:wrap}.view-control{flex-direction:row;align-items:center}.canvas-tip{max-width:82%;font-size:9px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main>
+<header class="topline"><div class="brand"><img class="brand-logo" id="brandLogo" src="https://cdn.phototourl.com/member/2026-10-16-d0d23b41-c667-4d19-8962-a846c54e71a5.png" alt="FrameLabs 2D Physics Model logo" width="60" height="60" loading="eager" decoding="async"><div class="brand-mark brand-mark-fallback hidden" id="brandLogoFallback" aria-hidden="true">F</div><div><div class="eyebrow">Interactive structural sandbox · 2D demonstrator</div><h1>FrameLab Sandbox</h1></div></div><div class="badge">EDUCATIONAL MODEL · NOT FOR DESIGN OR SAFETY DECISIONS</div></header>
+<section class="panel" aria-label="Sandbox construction tools">
+ <div class="toolbar">
+  <div class="group"><div class="group-title">Interaction mode</div><div class="button-row" id="modeButtons"><button type="button" data-mode="build" class="active" aria-pressed="true" title="Shortcut: B">Build</button><button type="button" data-mode="demolish" aria-pressed="false" title="Shortcut: D">Demolish</button><button type="button" data-mode="load" aria-pressed="false" title="Shortcut: L">Apply load</button><button type="button" data-mode="push" aria-pressed="false" title="Shortcut: P">Push</button></div><div class="field" style="margin-top:10px"><label for="componentType">Build component</label><select id="componentType"><option value="column">Support column</option><option value="beam">Beam</option><option value="slab">Floor slab</option></select></div></div>
+  <div class="group"><div class="group-title">Material library</div><div class="field"><label for="material">Material</label><select id="material"><option value="steel">Steel · high capacity</option><option value="concrete">Concrete · heavy</option><option value="wood">Wood · lower capacity</option></select></div><div class="field"><label for="loadAmount">Load per click <output id="loadOut">2.0</output></label><input id="loadAmount" type="range" min="0.5" max="5" value="2" step="0.5"></div><p style="margin:6px 0 0;color:var(--muted);font-size:10px;line-height:1.45">Click grid segments to place or modify elements. Repeated load clicks add mass.</p></div>
+  <div class="group"><div class="group-title">Check and simulate</div><div class="action-grid"><button id="validate" class="primary" type="button" title="Run a fresh static check">Validate</button><button id="simulate" class="secondary" type="button" aria-pressed="false" title="Shortcut: Space">▶ Simulate</button><button id="resetPhysics" class="secondary" type="button" title="Restore member integrity and reset motion">Reset physics</button><button id="example" class="secondary" type="button">Example frame</button><button id="clear" class="danger" type="button">Clear design</button><button id="save" class="secondary" type="button" title="Export the current design to JSON">Save JSON</button><button id="loadJson" class="secondary" type="button" title="Load a FrameLab JSON file">Load JSON</button></div><input id="fileInput" class="hidden" type="file" accept="application/json,.json"></div>
+  <div class="group"><div class="group-title">Display and readout</div><div class="field"><label for="displayMode">Heatmap</label><select id="displayMode"><option value="stress">Stress / capacity</option><option value="integrity">Remaining integrity</option><option value="loadpath">Load path / floating clusters</option><option value="material">Material colors</option></select></div><div class="field"><label>Current tool</label><div id="toolStatus" style="font-size:12px;color:var(--cyan);min-height:30px;line-height:1.4">Build · Support column</div></div><p style="margin:4px 0 0;color:var(--muted);font-size:10px;line-height:1.45">Beams use a bending-moment check. Mid-span snaps form a hinged V, tug nearby joints inward, and may buckle columns beyond 15° tilt.</p></div>
+ </div>
+</section>
+<section class="stage" aria-label="Interactive building grid">
+ <div class="stage-head"><div class="scenario-name"><span id="liveDot" class="live-dot"></span><span id="caseTitle">Empty sandbox · ready to build</span></div><div class="view-control"><span>Grid: 12 bays × 8 levels</span></div></div>
+ <div class="canvas-wrap"><canvas id="scene" width="1100" height="680" aria-label="Editable structural grid. Click to place, remove, load, or push. Keyboard shortcuts are listed below the canvas." tabindex="0" aria-describedby="canvasTip"></canvas><div class="canvas-tip" id="canvasTip">Build: columns on vertical segments; beams and slabs on horizontal segments</div></div>
+ <div class="legend"><span>LOW</span><span class="gradient" aria-hidden="true"></span><span>HIGH / FAILED</span><span class="legend-spacer"></span><span>Blue → green → yellow → red = increasing utilization</span></div>
+</section>
+<section class="readout" aria-label="Live simulation metrics">
+ <div class="metric"><div class="metric-title">Peak utilization</div><div class="metric-value" id="utilMetric">—</div><div class="metric-sub">estimated demand / remaining capacity</div></div>
+ <div class="metric"><div class="metric-title">Members / loads</div><div class="metric-value" id="memberMetric">0 / 0</div><div class="metric-sub">columns, beams, slabs and added loads</div></div>
+ <div class="metric"><div class="metric-title">Design integrity</div><div class="metric-value" id="integrityMetric">100%</div><div class="metric-sub">average remaining integrity of members</div></div>
+ <div class="metric"><div class="metric-title">Simulation time</div><div class="metric-value" id="timeMetric">0.0 s</div><div class="metric-sub" id="stateMetric">Ready · paused</div></div>
+ <div class="metric"><div class="metric-title">Last impact energy</div><div class="metric-value" id="impactMetric">—</div><div class="metric-sub" id="impactSub">No impact recorded</div></div>
+ <div class="metric"><div class="metric-title">Stability margin</div><div class="metric-value" id="stabilityMetric">—</div><div class="metric-sub" id="stabilitySub">Center of mass vs. base supports</div></div>
+</section>
+<section class="feedback" aria-live="polite"><div><h2>Structural verification</h2><p id="validationResult" class="result">Empty design. Build a frame, then choose Validate.</p></div><div><h2>Simulation events</h2><p id="eventInfo">Build Mode is ready. The grid is empty; the physics engine reads the editable BuildingMap.</p></div></section>
+<aside class="notice"><span class="notice-icon" aria-hidden="true">ⓘ</span><div><strong>Interpretation:</strong> This is a qualitative, reduced-order teaching model. Material capacities, impact resistance, kinetic-energy transfer, impulse, fracture thresholds, deformation and shockwave propagation use illustrative units, not calibrated real-world properties or engineering calculations. The model demonstrates conceptual behavior but does not validate actual building safety.</div></aside>
+<div class="explain">Tips: Build continuous columns from the foundation, connect them with beams, add slabs, then select Validate. Apply loads to individual bays and use the heatmap to inspect weak points. Demolish removes a member immediately; failures during simulation create movable debris. Save JSON exports the design and member damage state (not a live replay). Keyboard shortcuts: B build · D demolish · L apply load · P push · V validate · Space simulate/pause.</div>
+</main>
+<script>
+(() => {
+'use strict';
+const W=1100,H=680,NX=12,NY=8,STORY_HEIGHT=3.15,DT=1/60;
+const GRID_LEFT=145,GRID_RIGHT=955,GROUND_Y=595,STORY_PX=53,DX=(GRID_RIGHT-GRID_LEFT)/NX;
+const GRAVITY=9.81,MAX_FALL_SPEED=15,IMPACT_RESTITUTION=.12,IMPACT_TRANSFER_EFFICIENCY=.82,IMPACT_ENERGY_PER_CAPACITY=3,IMPACT_DURATION=.08,IMPACT_FORCE_NORMALIZER=.02,IMPACT_MOMENTUM_TRANSFER=.25,SHOCKWAVE_TRANSFER=.28,FAILURE_INTEGRITY=.18,FLOOR_THICKNESS=.12,CRITICAL_TILT=18*Math.PI/180,COLUMN_TILT_LIMIT=15*Math.PI/180,ROTATION_DAMPING=.28;
+const IMPACT_RESISTANCE={steel:{column:1.45,beam:1.32,slab:1.18},concrete:{column:1.12,beam:.96,slab:.84},wood:{column:.72,beam:.62,slab:.54}};
+const MATERIALS={steel:{label:'Steel',column:{mass:.22,capacity:28},beam:{mass:.18,capacity:18},slab:{mass:.32,capacity:15},color:'#78caff'},concrete:{label:'Concrete',column:{mass:.42,capacity:17},beam:{mass:.34,capacity:11},slab:{mass:.65,capacity:8},color:'#b4c0d0'},wood:{label:'Wood',column:{mass:.16,capacity:9},beam:{mass:.14,capacity:6},slab:{mass:.28,capacity:3.8},color:'#dca76a'}};
+const $=id=>document.getElementById(id),canvas=$('scene'),ctx=canvas.getContext('2d');
+// If the externally hosted logo is unavailable, fall back to the original FrameLab mark.
+const brandLogo=$('brandLogo'),brandLogoFallback=$('brandLogoFallback');
+if(brandLogo&&brandLogoFallback){const showBrandFallback=()=>{brandLogo.classList.add('hidden');brandLogoFallback.classList.remove('hidden')};brandLogo.addEventListener('error',showBrandFallback,{once:true});if(brandLogo.complete&&brandLogo.naturalWidth===0)showBrandFallback();}
+// Story summaries are retained for the readout, while physical motion is driven by independent joints and members.
+class Floor {
+ constructor(level){
+  this.level=level;
+  this.position={x:0,y:level*STORY_HEIGHT};
+  this.velocity={x:0,y:0};
+  this.acceleration={x:0,y:0};
+  this.mass=0;
+  this.integrity=1;
+  this.structuralIntegrity=1;
+  this.connections=[];
+  this.supportCapacity=0;
+  this.isSupported=level===0;
+  this.isFalling=false;
+  this.active=level===0;
+  this.contactFloor=null;
+  this.lastImpactTime=-Infinity;
+  this.collisionBounds={left:0,right:NX,bottom:this.position.y,top:this.position.y+FLOOR_THICKNESS};
+ }
+ updateCollisionBounds(){this.collisionBounds={left:0,right:NX,bottom:this.position.y,top:this.position.y+FLOOR_THICKNESS};}
+}
+// Joint nodes carry independent vector state. Their nominal coordinates are only the initial configuration.
+class StructuralNode {
+ constructor(x,level){this.key=keyOf(x,level);this.gridX=x;this.referenceLevel=level;this.reference={x:x*STORY_HEIGHT,y:level*STORY_HEIGHT};this.position={x:this.reference.x,y:this.reference.y};this.velocity={x:0,y:0};this.acceleration={x:0,y:0};this.mass=.05;this.isGroundConnected=level===0;this.isLoaded=false;this.isStressed=false;this.memberIds=[];this.lastImpactTime=-Infinity;this.isFreefalling=level>0;this.floatingClusterId=null;}
+}
+// Every member end has an explicit shear connection. A connection can fail without instantly deleting the whole building.
+class Connection {
+ constructor(id,memberId,nodeKey,shearStrength,state){this.id=id;this.memberId=memberId;this.nodeKey=nodeKey;this.shearStrength=shearStrength;this.state=state;this.broken=!!state.broken;this.reason=state.reason||'';}
+ break(reason='joint failure'){if(this.broken)return false;this.broken=true;this.reason=reason;this.state.broken=true;this.state.reason=reason;return true;}
+}
+let BuildingMap=newBuildingMap();let mode='build',hover={x:0,y:1,valid:false},dragging=false,lastDragKey='',lastDragPt=null,lastAnalysis=null,frame=0,previous=performance.now();
+let sim=newPhysicsState();
+function newBuildingMap(){return {columns:{},beams:{},slabs:{},loads:{}}}
+function newPhysicsState(){return {running:false,time:0,floors:Array.from({length:NY+1},(_,level)=>new Floor(level)),nodes:Object.create(null),memberLinks:[],connections:[],connectionStates:Object.create(null),collisionPairs:Object.create(null),assemblyDynamics:Object.create(null),stability:{assemblies:[],primary:null,nodeAssembly:Object.create(null),byId:Object.create(null)},floatingClusters:[],debris:[],nextDebrisId:1,localFailureCount:0,lateralDisp:new Float64Array(NY+1),lateralVel:new Float64Array(NY+1),overloadTimers:{},lastImpactEnergy:0,lastRawEnergy:0,lastImpactForce:0,lastImpactStory:-1,lastImpactOutcome:'',lastEvent:'Build a frame to begin.',eventUntil:0,peakUtil:0}}
+function memberCount(){return ['columns','beams','slabs'].reduce((n,g)=>n+Object.values(BuildingMap[g]).filter(e=>!e.failed&&!e.snapped).length,0)}
+function totalCount(){return memberCount()+Object.values(BuildingMap.loads).length}
+function allMembers(){return ['columns','beams','slabs'].flatMap(k=>Object.entries(BuildingMap[k]).map(([key,e])=>({group:k,key,e})))}
+function keyOf(x,y){return `${x},${y}`}
+function makeElement(kind,x,y,material){const p=MATERIALS[material][kind],impactResistance=IMPACT_RESISTANCE[material][kind];return {x,y,kind,material,mass:p.mass,capacity:p.capacity,yieldStrength:p.capacity,momentCapacity:kind==='beam'?p.capacity*.42:0,impactResistance,durability:p.capacity*impactResistance*IMPACT_ENERGY_PER_CAPACITY,bendingMoment:0,momentUtilization:0,effectiveSpan:1,momentOverloadTime:0,snapped:false,shattered:false,snapSag:0,snapVelocity:0,snapAge:0,snapCenterX:null,impactDamage:0,impactDeformation:0,impactStress:0,lastImpactEnergy:0,lastImpactTime:-Infinity,integrity:1,structuralIntegrity:1,failed:false,demand:0,utilization:0,unsupported:false,isLoaded:false,isStressed:false,connections:[],angle:0,strain:0,tiltAngle:0,lateralForce:0}}
+function resetPhysics(restoreMembers=false){dragging=false;lastDragKey='';lastDragPt=null;sim=newPhysicsState();if(restoreMembers){for(const {e} of allMembers()){e.integrity=1;e.structuralIntegrity=1;e.failed=false;e.snapped=false;e.shattered=false;e.snapSag=0;e.snapVelocity=0;e.snapAge=0;e.snapCenterX=null;e.momentOverloadTime=0;e.bendingMoment=0;e.momentUtilization=0;e.effectiveSpan=1;e.tiltAngle=0;e.lateralForce=0;e.impactDamage=0;e.impactDeformation=0;e.impactStress=0;e.lastImpactEnergy=0;e.lastImpactTime=-Infinity;e.debrisSpawned=false;e.failureReason='';e.state='intact';e.demand=0;e.utilization=0;e.unsupported=false;e.isFreefalling=false;e.dynamicUtilization=0}for(const l of Object.values(BuildingMap.loads)){l.integrity=1;l.failed=false}}sim.running=false;syncButtons();refreshAll()}
+function screenX(x,level=0){const node=sim.nodes[keyOf(x,level)];const worldX=node?node.position.x/STORY_HEIGHT:x;return GRID_LEFT+worldX*DX+sim.lateralDisp[Math.max(0,Math.min(NY,level))]*23}
+function screenYNode(x,level){const node=sim.nodes[keyOf(x,level)];const worldY=node?node.position.y:level*STORY_HEIGHT;return GROUND_Y-(worldY/STORY_HEIGHT)*STORY_PX}
+function screenYLevel(level){const index=Math.max(0,Math.min(NY,level));const matching=Object.values(sim.nodes).filter(n=>n.referenceLevel===index);if(matching.length)return GROUND_Y-(matching.reduce((sum,n)=>sum+n.position.y,0)/matching.length/STORY_HEIGHT)*STORY_PX;return GROUND_Y-(sim.floors[index].position.y/STORY_HEIGHT)*STORY_PX}
+function gridY(level){return GROUND_Y-level*STORY_PX}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function stressColor(v){const colors=[[75,158,255],[61,211,195],[183,224,109],[255,202,83],[255,91,113]];const q=clamp(v/1.25,0,1)*(colors.length-1),i=Math.min(colors.length-2,Math.floor(q)),f=q-i;return `rgb(${colors[i].map((c,j)=>Math.round(c+(colors[i+1][j]-c)*f)).join(',')})`}
+function materialColor(mat){return MATERIALS[mat]?.color||'#b4c0d0'}
+function debrisColor(d){if(d.impactCount>0||/shatter|catastrophic|impact/i.test(d.reason||''))return d.settled?'#d98e6b':'#ff9a72';return ({steel:'#69b8ed',concrete:'#c9ad87',wood:'#e0a76c'})[d.material]||'#d0aa7b'}
+function hasColumn(x,y){const e=BuildingMap.columns[keyOf(x,y)];if(!e||e.failed||e.integrity<=0)return false;const id=`columns|${keyOf(x,y)}`,a=sim.connectionStates[connectionId(id,'a')],b=sim.connectionStates[connectionId(id,'b')];return !a?.broken&&!b?.broken}
+function hasBeam(x,y){const e=BuildingMap.beams[keyOf(x,y)];if(!e||e.failed||e.snapped||e.integrity<=0)return false;const id=`beams|${keyOf(x,y)}`,a=sim.connectionStates[connectionId(id,'a')],b=sim.connectionStates[connectionId(id,'b')];return !a?.broken&&!b?.broken}
+function columnStacked(x,level){if(level<1)return true;for(let y=0;y<level;y++)if(!hasColumn(x,y))return false;return true}
+function beamComponentHasSupport(startX,y){const seen=new Set(),queue=[startX];while(queue.length){const node=queue.shift();if(seen.has(node))continue;seen.add(node);if(node>=0&&node<=NX&&columnStacked(node,y))return true;for(const bx of [node-1,node]){if(bx<0||bx>=NX)continue;const beam=BuildingMap.beams[keyOf(bx,y)];if(beam&&hasBeam(bx,y)){const next=bx===node?bx+1:bx;if(!seen.has(next))queue.push(next)}}}return false}
+function baySupported(x,y){const direct=columnStacked(x,y)&&columnStacked(x+1,y);if(direct)return true;const beam=BuildingMap.beams[keyOf(x,y)];if(!beam||!hasBeam(x,y))return false;return beamComponentHasSupport(x,y)||beamComponentHasSupport(x+1,y)}
+// Estimate the clear span between surviving support paths along a continuous beam line.
+function beamSpanInfo(x,y){let left=x,right=x+1,steps=0;while(left>0&&!columnStacked(left,y)&&hasBeam(left-1,y)&&steps++<=NX)left--;steps=0;while(right<NX&&!columnStacked(right,y)&&hasBeam(right,y)&&steps++<=NX)right++;return {left,right,bays:Math.max(1,right-left),leftSupported:columnStacked(left,y),rightSupported:columnStacked(right,y),center:(left+right)*.5}}
+function beamBendingData(beam){const span=beamSpanInfo(beam.x,beam.y),L=span.bays*STORY_HEIGHT,d=clamp((beam.x+.5-span.left)*STORY_HEIGHT,.01,Math.max(.01,L-.01));let sum=0,n=0;for(let x=span.left;x<span.right;x++){const b=BuildingMap.beams[keyOf(x,beam.y)];if(!b||b.failed||b.snapped)continue;const slab=BuildingMap.slabs[keyOf(x,beam.y)],load=BuildingMap.loads[keyOf(x,beam.y)];const basic=(slab&&!slab.failed?slab.mass*.28:0)+(load&&!load.failed?load.mass:0)+b.mass*.7;sum+=Math.max(basic,Number(b.demand)||0);n++}const averageDemand=n?sum/n:Math.max(.01,beam.demand||beam.mass);const w=Math.max(.01,averageDemand)/STORY_HEIGHT;return {moment:w*d*(L-d)/2,span,averageDemand,lineLoad:w}}
+function endpointKeys(group,e){return group==='columns'?[keyOf(e.x,e.y),keyOf(e.x,e.y+1)]:[keyOf(e.x,e.y),keyOf(e.x+1,e.y)]}
+function memberConnectionStrength(e){return e.capacity*clamp(e.integrity,0,1)*(e.kind==='column'?12:e.kind==='beam'?8:5)}
+function connectionId(memberId,end){return `${memberId}:${end}`}
+function refreshMemberTopology(){
+ const previousNodes=sim.nodes||Object.create(null),nodes=previousNodes,links=[],connections=[],usedNodes=new Set();
+ const ensureNode=(x,y)=>{const key=keyOf(x,y);usedNodes.add(key);if(!nodes[key])nodes[key]=new StructuralNode(x,y);return nodes[key]};
+ for(const {group,key,e} of allMembers()){
+  if(e.failed&&e.debrisSpawned)continue;
+  const [aKey,bKey]=endpointKeys(group,e),aParts=aKey.split(',').map(Number),bParts=bKey.split(',').map(Number);
+  const a=ensureNode(aParts[0],aParts[1]),b=ensureNode(bParts[0],bParts[1]);
+  const id=`${group}|${key}`,strength=memberConnectionStrength(e);
+  const stateA=sim.connectionStates[connectionId(id,'a')]||(sim.connectionStates[connectionId(id,'a')]={broken:!!e.failed,reason:e.failed?'member failed':''});
+  const stateB=sim.connectionStates[connectionId(id,'b')]||(sim.connectionStates[connectionId(id,'b')]={broken:!!e.failed,reason:e.failed?'member failed':''});
+  const ca=new Connection(connectionId(id,'a'),id,aKey,strength,stateA),cb=new Connection(connectionId(id,'b'),id,bKey,strength,stateB);
+  connections.push(ca,cb);e.connections=[ca.id,cb.id];
+  const dx=b.position.x-a.position.x,dy=b.position.y-a.position.y;e.angle=Math.atan2(dy,dx);e.strain=Math.hypot(dx,dy)/STORY_HEIGHT-1;
+  links.push({id,group,key,e,nodeA:aKey,nodeB:bKey,connectionA:ca,connectionB:cb,restLength:STORY_HEIGHT});
+ }
+ for(const load of Object.values(BuildingMap.loads)){ensureNode(load.x,load.y);ensureNode(load.x+1,load.y)}
+ for(const key of Object.keys(nodes))if(!usedNodes.has(key))delete nodes[key];
+ sim.nodes=nodes;sim.memberLinks=links;sim.connections=connections;
+ for(const node of Object.values(nodes)){node.memberIds=[];node.mass=.05;node.isLoaded=false;node.isStressed=false}
+ for(const link of links){const e=link.e;if(e.failed)continue;nodes[link.nodeA].memberIds.push(link.id);nodes[link.nodeB].memberIds.push(link.id);nodes[link.nodeA].mass+=Math.max(.01,e.mass*.5);nodes[link.nodeB].mass+=Math.max(.01,e.mass*.5);e.isLoaded=(e.demand||0)>.02;e.isStressed=(e.utilization||0)>.8}
+ for(const load of Object.values(BuildingMap.loads)){if(load.failed)continue;const share=Math.max(.01,load.mass*.5);nodes[keyOf(load.x,load.y)].mass+=share;nodes[keyOf(load.x+1,load.y)].mass+=share;nodes[keyOf(load.x,load.y)].isLoaded=true;nodes[keyOf(load.x+1,load.y)].isLoaded=true;}
+ updateNodeAnchors();
+ return links;
+}
+function linkTransfersSupport(link){return !link.e.failed&&!link.e.snapped&&link.e.integrity>0.02&&!link.connectionA.broken&&!link.connectionB.broken}
+function updateNodeAnchors(){
+ const nodes=sim.nodes,adj=Object.create(null);for(const key of Object.keys(nodes))adj[key]=[];
+ for(const link of sim.memberLinks){if(linkTransfersSupport(link)){adj[link.nodeA].push(link.nodeB);adj[link.nodeB].push(link.nodeA)}}
+ const queue=[];for(const [key,node] of Object.entries(nodes)){node.isGroundConnected=false;node.isFreefalling=true;node.floatingClusterId=null;if(node.referenceLevel===0){node.isGroundConnected=true;queue.push(key)}}
+ while(queue.length){const key=queue.shift();for(const next of adj[key]||[]){if(nodes[next]&&!nodes[next].isGroundConnected){nodes[next].isGroundConnected=true;queue.push(next)}}}
+ const visited=new Set(),clusters=[];
+ for(const start of Object.keys(nodes)){if(visited.has(start))continue;const nodeKeys=[],q=[start];visited.add(start);let grounded=false;while(q.length){const key=q.shift(),n=nodes[key];nodeKeys.push(key);grounded=grounded||!!n.isGroundConnected;for(const next of adj[key]||[])if(!visited.has(next)){visited.add(next);q.push(next)}}const id=`cluster:${start}`;for(const key of nodeKeys){nodes[key].floatingClusterId=id;nodes[key].isFreefalling=!grounded}clusters.push({id,nodeKeys:new Set(nodeKeys),grounded,isFloating:!grounded,mass:nodeKeys.reduce((sum,key)=>sum+Math.max(.01,nodes[key].mass||.01),0)});}
+ sim.floatingClusters=clusters.filter(c=>c.isFloating);
+ for(const link of sim.memberLinks){const e=link.e,a=nodes[link.nodeA],b=nodes[link.nodeB];if(!a||!b)continue;e.clusterId=a.floatingClusterId===b.floatingClusterId?a.floatingClusterId:null;e.isFreefalling=!a.isGroundConnected&&!b.isGroundConnected&&!e.failed;e.state=e.failed?(e.shattered?'SHATTERED':'FAILED'):e.snapped?'SNAPPED':e.isFreefalling?'FLOATING':(e.utilization||0)>1?'OVERLOADED':'SUPPORTED';}
+ for(let level=0;level<=NY;level++){
+  const floor=sim.floors[level];floor.connections=[];
+  if(level>0)for(const [key,col] of Object.entries(BuildingMap.columns))if(col.y===level-1&&!col.failed&&col.integrity>0){floor.connections.push({type:'column',key,x:col.x,capacity:col.capacity*col.integrity})}
+  const levelNodes=Object.values(nodes).filter(n=>n.referenceLevel===level);let mass=0;for(const group of ['beams','slabs'])for(const e of Object.values(BuildingMap[group]))if(e.y===level&&!e.failed)mass+=e.mass;for(const load of Object.values(BuildingMap.loads))if(load.y===level&&!load.failed)mass+=load.mass;for(const col of Object.values(BuildingMap.columns))if(!col.failed&&(col.y===level-1||col.y===level))mass+=col.mass*.5;
+  floor.mass=mass;floor.isSupported=level===0||levelNodes.some(n=>n.isGroundConnected);floor.active=level===0||levelNodes.length>0;floor.supportCapacity=floor.connections.reduce((sum,c)=>sum+c.capacity,0);
+  if(levelNodes.length){floor.position.y=levelNodes.reduce((sum,n)=>sum+n.position.y,0)/levelNodes.length;floor.velocity.y=levelNodes.reduce((sum,n)=>sum+n.velocity.y,0)/levelNodes.length;floor.isFalling=levelNodes.some(n=>n.isFreefalling&&n.velocity.y<-.12)}floor.updateCollisionBounds();
+ }
+}
+function refreshFloorConnections(){refreshMemberTopology()}
+function breakMemberConnections(link,reason){let changed=false;changed=link.connectionA.break(reason)||changed;changed=link.connectionB.break(reason)||changed;return changed}
+function connectionFor(memberId,nodeKey){return sim.connections.find(c=>c.memberId===memberId&&c.nodeKey===nodeKey)}
+function updateDebrisBounds(d){const hx=(Math.abs(Math.cos(d.angle))*d.length+Math.abs(Math.sin(d.angle))*d.thickness)*.5,hy=(Math.abs(Math.sin(d.angle))*d.length+Math.abs(Math.cos(d.angle))*d.thickness)*.5;d.collisionBounds={left:d.x-hx,right:d.x+hx,bottom:d.y-hy,top:d.y+hy};return d.collisionBounds}
+function spawnMemberDebris(link,reason='member failure'){
+ if(!link||link.e.debrisSpawned)return null;const a=sim.nodes[link.nodeA],b=sim.nodes[link.nodeB];if(!a||!b)return null;
+ const dx=b.position.x-a.position.x,dy=b.position.y-a.position.y,len=Math.max(.15,Math.hypot(dx,dy)),material=link.e.material,kind=link.e.kind;
+ const debris={id:sim.nextDebrisId++,sourceId:link.id,kind,material,x:(a.position.x+b.position.x)*.5,y:(a.position.y+b.position.y)*.5,angle:Math.atan2(dy,dx),length:len,thickness:kind==='slab'?.16:kind==='column'?.12:.1,mass:Math.max(.02,link.e.mass),capacity:Math.max(.01,link.e.capacity||1),impactResistance:link.e.impactResistance||IMPACT_RESISTANCE[material]?.[kind]||1,durability:link.e.durability||link.e.capacity*IMPACT_ENERGY_PER_CAPACITY,integrity:clamp(link.e.integrity,0,1),vx:(a.velocity.x+b.velocity.x)*.5,vy:(a.velocity.y+b.velocity.y)*.5,angularVelocity:((dx*(b.velocity.y-a.velocity.y)-dy*(b.velocity.x-a.velocity.x))/(len*len)),momentOfInertia:Math.max(.02,Math.max(.02,link.e.mass)*len*len/12),tipDirection:((a.position.x+b.position.x)*.5<NX*STORY_HEIGHT*.5?-1:1),age:0,settled:false,grounded:false,reason,impactCooldown:-Infinity,impactCount:0};updateDebrisBounds(debris);
+ if(debris.vy>MAX_FALL_SPEED)debris.vy=MAX_FALL_SPEED;sim.debris.push(debris);link.e.debrisSpawned=true;link.e.failureReason=reason;return debris;
+}
+function failMember(link,reason='structural failure'){
+ if(!link||link.e.failed)return false;const e=link.e;spawnMemberDebris(link,reason);e.failed=true;e.integrity=0;e.structuralIntegrity=0;e.shattered=/shatter|instant fracture|catastrophic impact/i.test(reason);e.state=e.shattered?'SHATTERED':'FAILED';e.failureReason=reason;breakMemberConnections(link,reason);sim.localFailureCount++;sim.lastEvent=e.shattered?`IMPACT SHATTER · ${e.kind.toUpperCase()} ${link.key}`:`LOCAL MEMBER FAILURE · ${e.kind.toUpperCase()} ${link.key}`;sim.eventUntil=sim.time+3.5;return true;
+}
+
+function analyzeStructure(){
+ const nodeLoads=Array.from({length:NY+1},()=>Array(NX+1).fill(0)),issues=[],warnings=[],unsupportedFloors=[];
+ let maxUtil=0,integritySum=0,integrityN=0,overloaded=0;
+ const activeMember=(group,key)=>{const e=BuildingMap[group][key];if(!e||e.failed||e.snapped||e.integrity<=.001)return null;const id=`${group}|${key}`,sa=sim.connectionStates[connectionId(id,'a')],sb=sim.connectionStates[connectionId(id,'b')];if(sa?.broken||sb?.broken)return null;return e};
+ const activeColumn=(x,y)=>activeMember('columns',keyOf(x,y));
+ const activeBeam=(x,y)=>activeMember('beams',keyOf(x,y));
+ const beamPath=(startX,level)=>{
+  const q=[{x:startX,path:[]}],seen=new Set([startX]),recipients=[];
+  while(q.length){const cur=q.shift(),col=activeColumn(cur.x,level-1);if(col&&cur.path.length>0||col&&cur.x!==startX)recipients.push({x:cur.x,col,path:cur.path});
+   for(const bx of [cur.x-1,cur.x]){if(bx<0||bx>=NX)continue;const beam=activeBeam(bx,level);if(!beam)continue;const nx=bx===cur.x?cur.x+1:cur.x-1;if(seen.has(nx))continue;seen.add(nx);q.push({x:nx,path:[...cur.path,bx]})}
+  }
+  return recipients;
+ };
+ for(let y=1;y<=NY;y++)for(let x=0;x<NX;x++){
+  const slab=BuildingMap.slabs[keyOf(x,y)],beam=BuildingMap.beams[keyOf(x,y)],load=BuildingMap.loads[keyOf(x,y)];
+  const bayMass=(slab&&!slab.failed?slab.mass:0)+(load&&!load.failed?load.mass:0)+(beam&&!beam.failed?beam.mass:0);
+  nodeLoads[y][x]+=bayMass/2;nodeLoads[y][x+1]+=bayMass/2;
+  if((slab&&!slab.failed||load&&!load.failed)&&!baySupported(x,y)){unsupportedFloors.push({x,y});if(!slab||slab.failed)issues.push(`Load at bay ${x+1}, level ${y} has no slab.`);else issues.push(`Bay ${x+1}, level ${y} has insufficient support.`)}
+  if(load&&!load.failed)load.unsupported=!(slab&&!slab.failed)&&!baySupported(x,y);
+  if(slab&&!slab.failed){const d=(load&&!load.failed?load.mass:0)+slab.mass*.28;slab.demand=d;slab.unsupported=slab.snapped||!baySupported(x,y);slab.utilization=slab.snapped?Math.max(1.05,d/Math.max(.01,slab.capacity*slab.integrity)):d/Math.max(.01,slab.capacity*slab.integrity);slab.isLoaded=d>.02;slab.isStressed=slab.utilization>.8;maxUtil=Math.max(maxUtil,slab.utilization);if(slab.utilization>1)overloaded++}
+ }
+ // Debris resting on a floor acts as temporary added mass; ground debris is handled as an obstacle instead.
+ for(const d of sim.debris||[]){if(!d.settled||d.y<STORY_HEIGHT*.45||d.y>NY*STORY_HEIGHT+STORY_HEIGHT*.2)continue;const level=clamp(Math.round(d.y/STORY_HEIGHT),1,NY),bay=clamp(Math.floor(d.x/STORY_HEIGHT),0,NX-1);nodeLoads[level][bay]+=d.mass*.5;nodeLoads[level][bay+1]+=d.mass*.5;}
+ for(const l of Object.values(BuildingMap.loads)){if(l.failed)continue;l.capacity=0;l.demand=l.mass;l.utilization=l.unsupported?9:0;l.integrity??=1;}
+ const beamRedistribution=Object.create(null),columnDemand=Object.create(null);for(const [key,col] of Object.entries(BuildingMap.columns)){col.demand=0;col.unsupported=false;columnDemand[key]=0}
+ let carried=Array(NX+1).fill(0),unresolved=0;
+ for(let level=NY;level>=1;level--){
+  const incoming=nodeLoads[level].map((v,x)=>Math.max(0,v+carried[x])),delivered=Array(NX+1).fill(0),nextCarry=Array(NX+1).fill(0);
+  for(let x=0;x<=NX;x++){
+   const weight=incoming[x];if(weight<.0001)continue;const col=activeColumn(x,level-1);
+   if(col){delivered[x]+=weight;continue}
+   const recipients=beamPath(x,level);
+   if(!recipients.length){unresolved+=weight;if(weight>.04)warnings.push(`Uncarried load ${weight.toFixed(2)} at node x=${x}, level ${level} has no healthy route to a lower support.`);continue}
+   // Beam continuity redistributes load to surviving neighbouring column paths in proportion to remaining capacity.
+   const total=recipients.reduce((sum,r)=>sum+Math.max(.01,r.col.capacity*r.col.integrity),0);
+   for(const r of recipients){const share=weight*Math.max(.01,r.col.capacity*r.col.integrity)/total;delivered[r.x]+=share;for(const bx of r.path){const beamKey=keyOf(bx,level);beamRedistribution[beamKey]=(beamRedistribution[beamKey]||0)+share/Math.max(1,r.path.length)*.42}}
+  }
+  for(let x=0;x<=NX;x++){
+   const col=activeColumn(x,level-1);if(!col||delivered[x]<=0)continue;const key=keyOf(x,level-1);col.demand+=delivered[x]+col.mass*.5;nextCarry[x]+=delivered[x]+col.mass;
+  }
+  carried=nextCarry;
+ }
+ for(const [key,col] of Object.entries(BuildingMap.columns)){
+  if(col.failed){col.demand=col.mass;col.utilization=9;col.unsupported=true;continue}
+  const bottomSupported=columnStacked(col.x,col.y)||beamComponentHasSupport(col.x,col.y);col.unsupported=!bottomSupported&&col.demand>.04;
+  col.utilization=col.demand/Math.max(.01,col.capacity*col.integrity);if(col.unsupported)col.utilization=Math.max(1.12,col.utilization);
+  col.isLoaded=col.demand>.02;col.isStressed=col.utilization>.8;maxUtil=Math.max(maxUtil,col.utilization);if(col.utilization>1)overloaded++;
+ }
+ for(const [key,beam]of Object.entries(BuildingMap.beams)){
+  if(beam.failed){beam.demand=beam.mass;beam.utilization=9;beam.unsupported=true;continue}
+  const slab=BuildingMap.slabs[keyOf(beam.x,beam.y)],load=BuildingMap.loads[keyOf(beam.x,beam.y)];let d=(slab&&!slab.failed?slab.mass*.28:0)+(load&&!load.failed?load.mass:0)+beam.mass*.7+(beamRedistribution[key]||0);
+  beam.demand=d;beam.unsupported=beam.snapped||!baySupported(beam.x,beam.y);beam.isLoaded=d>.02;
+  if(beam.snapped){beam.bendingMoment=Math.max(beam.bendingMoment||0,beam.momentCapacity||0);beam.momentUtilization=Math.max(1.05,beam.momentUtilization||0);beam.utilization=Math.max(1.05,d/Math.max(.01,beam.capacity*beam.integrity),beam.momentUtilization);beam.isStressed=true;maxUtil=Math.max(maxUtil,beam.utilization);overloaded++;continue}
+  const bending=beamBendingData(beam);beam.bendingMoment=bending.moment;beam.effectiveSpan=bending.span.bays;beam.momentUtilization=bending.moment/Math.max(.01,(beam.momentCapacity||beam.capacity*.42)*beam.integrity);
+  beam.utilization=Math.max(d/Math.max(.01,beam.capacity*beam.integrity),beam.momentUtilization);beam.isStressed=beam.utilization>.8;maxUtil=Math.max(maxUtil,beam.utilization);if(beam.utilization>1)overloaded++;
+ }
+ for(const {e} of allMembers()){
+  integritySum+=clamp(e.integrity,0,1);integrityN++;
+  if(e.failed){e.integrity=0;e.structuralIntegrity=0;e.state=e.shattered?'SHATTERED':'FAILED'}else if(e.snapped){e.structuralIntegrity=e.integrity;e.state='SNAPPED'}else{e.structuralIntegrity=e.integrity;e.state=(e.utilization||0)>1?'OVERLOADED':e.isFreefalling?'FLOATING':'SUPPORTED'}
+  e.isLoaded=(e.demand||0)>.02;e.isStressed=(e.utilization||0)>.8;
+ }
+ const count=totalCount();if(!count)issues.push('No elements in the design yet.');
+ if(memberCount()>0&&Object.values(BuildingMap.slabs).every(e=>e.failed)&&Object.keys(BuildingMap.loads).length===0)issues.push('No active floor slabs or loads remain; a complete gravity load path cannot be verified.');
+ for(let x=0;x<=NX;x++)for(let y=0;y<NY;y++){const c=BuildingMap.columns[keyOf(x,y)];if(c&&!c.failed&&c.y>0&&!columnStacked(c.x,c.y))warnings.push(`Column at x=${x}, story ${y+1} has a broken vertical support path.`)}
+ const uniqueIssues=[...new Set(issues)],uniqueWarnings=[...new Set(warnings)];
+ return {maxUtil,overloaded,unsupportedFloors,issues:uniqueIssues,warnings:uniqueWarnings,count,memberCount:memberCount(),failedMembers:allMembers().filter(({e})=>e.failed||e.snapped).length,integrity:integrityN?integritySum/integrityN:1,nodeLoads,unresolvedLoad:unresolved};
+}
+function getClosestSupportToCom(comX,supportPoints){if(!supportPoints.length)return null;return supportPoints.reduce((best,p)=>Math.abs(p.x-comX)<Math.abs(best.x-comX)?p:best,supportPoints[0])}
+function isCoMWithinBase(comX,supportPoints){if(!supportPoints.length)return false;const xs=supportPoints.map(p=>p.x),minX=Math.min(...xs),maxX=Math.max(...xs);if(maxX-minX<STORY_HEIGHT*.08)return Math.abs(comX-minX)<=STORY_HEIGHT*.08;return comX>=minX&&comX<=maxX}
+function calculateStability(analysis){
+ const nodes=sim.nodes||Object.create(null),links=sim.memberLinks||[],nodeKeys=Object.keys(nodes),adj=Object.create(null),nodeAssembly=Object.create(null),components=[];
+ for(const key of nodeKeys)adj[key]=[];
+ for(const link of links){if(!linkTransfersSupport(link))continue;adj[link.nodeA]?.push(link.nodeB);adj[link.nodeB]?.push(link.nodeA)}
+ for(const start of nodeKeys){if(nodeAssembly[start])continue;const keys=[],queue=[start],id=`asm:${start}`;nodeAssembly[start]=id;while(queue.length){const key=queue.shift();keys.push(key);for(const next of adj[key]||[])if(!nodeAssembly[next]){nodeAssembly[next]=id;queue.push(next)}}components.push({id,nodeKeys:new Set(keys),members:[],memberIds:new Set(),mass:0,weightedX:0,weightedY:0,supportPoints:[]})}
+ const byId=Object.create(null);for(const c of components)byId[c.id]=c;
+ const addMass=(c,m,x,y)=>{if(!c||!Number.isFinite(m)||m<=0)return;c.mass+=m;c.weightedX+=m*x;c.weightedY+=m*y};
+ // Each member's mass is assigned to the connected assembly at its intact end(s).
+ for(const link of links){const e=link.e;if(e.failed||e.integrity<=.02)continue;const aId=nodeAssembly[link.nodeA],bId=nodeAssembly[link.nodeB],aAlive=!link.connectionA.broken,bAlive=!link.connectionB.broken,a=nodes[link.nodeA],b=nodes[link.nodeB];if(!a||!b)continue;const m=Math.max(.01,e.mass);if(e.snapped){const ca=byId[aId],cb=byId[bId];if(ca)addMass(ca,m*(ca===cb?1:.5),a.position.x,a.position.y);if(cb&&cb!==ca)addMass(cb,m*.5,b.position.x,b.position.y);continue}let target=null;if(aAlive&&bAlive&&aId===bId)target=byId[aId];else if(aAlive)target=byId[aId];else if(bAlive)target=byId[bId];if(!target)continue;addMass(target,m,(a.position.x+b.position.x)*.5,(a.position.y+b.position.y)*.5);target.members.push(link);target.memberIds.add(link.id)}
+ // Loads contribute at their actual bay centre, split between disconnected endpoint assemblies when needed.
+ for(const load of Object.values(BuildingMap.loads)){if(load.failed||load.integrity<=.02)continue;const a=nodes[keyOf(load.x,load.y)],b=nodes[keyOf(load.x+1,load.y)];if(!a&&!b)continue;const aId=a?nodeAssembly[a.key]:null,bId=b?nodeAssembly[b.key]:null,ca=aId?byId[aId]:null,cb=bId?byId[bId]:null,m=Math.max(.01,load.mass);if(ca&&ca===cb)addMass(ca,m,(a.position.x+b.position.x)*.5,(a.position.y+b.position.y)*.5);else if(ca&&cb){addMass(ca,m*.5,a.position.x,a.position.y);addMass(cb,m*.5,b.position.x,b.position.y)}else if(ca)addMass(ca,m,(a.position.x+(b?.position.x??a.position.x))*.5,(a.position.y+(b?.position.y??a.position.y))*.5);else if(cb)addMass(cb,m,((a?.position.x??b.position.x)+b.position.x)*.5,((a?.position.y??b.position.y)+b.position.y)*.5)}
+ // Only an intact base column with both end joints intact counts as a foundation contact.
+ for(const link of links){const e=link.e;if(e.kind!=='column'||e.y!==0||e.failed||e.integrity<=.02||link.connectionA.broken||link.connectionB.broken)continue;const c=byId[nodeAssembly[link.nodeB]],base=nodes[link.nodeA];if(c&&base)c.supportPoints.push({x:base.position.x,capacity:Math.max(.01,e.capacity*e.integrity),memberId:link.id})}
+ const previous=sim.assemblyDynamics||Object.create(null),nextDynamics=Object.create(null),assemblies=[];
+ for(const c of components){
+  if(c.mass<=.001){for(const key of c.nodeKeys){const n=nodes[key];if(n)addMass(c,Math.max(.005,n.mass||.005),n.position.x,n.position.y)}}
+  c.comX=c.mass?c.weightedX/c.mass:0;c.comY=c.mass?c.weightedY/c.mass:0;c.totalMass=Math.max(.01,c.mass);c.supportPoints=c.supportPoints.filter((p,i,arr)=>arr.findIndex(q=>Math.abs(q.x-p.x)<.01)===i).sort((a,b)=>a.x-b.x);
+  c.minSupportX=c.supportPoints.length?Math.min(...c.supportPoints.map(p=>p.x)):null;c.maxSupportX=c.supportPoints.length?Math.max(...c.supportPoints.map(p=>p.x)):null;
+  c.withinBase=isCoMWithinBase(c.comX,c.supportPoints);c.outside=c.supportPoints.length===0||!c.withinBase;c.isFloating=c.supportPoints.length===0&&c.members.length>0&&[...c.nodeKeys].some(key=>!nodes[key]?.isGroundConnected);
+  c.supportCentroid=c.supportPoints.length?c.supportPoints.reduce((sum,p)=>sum+p.x*p.capacity,0)/c.supportPoints.reduce((sum,p)=>sum+p.capacity,0):c.comX;
+  c.projectedX=c.supportPoints.length?clamp(c.comX,c.minSupportX,c.maxSupportX):c.comX;
+  let pivot=getClosestSupportToCom(c.comX,c.supportPoints);if(c.supportPoints.length>1&&c.comX<c.minSupportX)pivot=c.supportPoints[0];else if(c.supportPoints.length>1&&c.comX>c.maxSupportX)pivot=c.supportPoints[c.supportPoints.length-1];
+  c.pivotX=pivot?pivot.x:c.comX;c.pivotY=0;c.shouldTip=c.supportPoints.length>0&&c.outside;c.tippingDirection=c.comX<c.minSupportX?'left':c.comX>c.maxSupportX?'right':'unsupported';
+  c.marginWorld=c.supportPoints.length>1?Math.min(c.comX-c.minSupportX,c.maxSupportX-c.comX):c.supportPoints.length===1?STORY_HEIGHT*.5-Math.abs(c.comX-c.supportPoints[0].x):0;
+  c.stabilityMetric=c.supportPoints.length>1?clamp((2*c.marginWorld/Math.max(.01,c.maxSupportX-c.minSupportX))*100,0,100):c.supportPoints.length===1?clamp((1-Math.abs(c.comX-c.supportPoints[0].x)/(STORY_HEIGHT*.5))*100,0,100):0;
+  // Moment of inertia uses member and load masses already accumulated into the assembly CoM.
+  let inertia=0;for(const link of c.members){const a=nodes[link.nodeA],b=nodes[link.nodeB];if(!a||!b)continue;const x=(a.position.x+b.position.x)*.5,y=(a.position.y+b.position.y)*.5;inertia+=Math.max(.01,link.e.mass)*((x-c.pivotX)**2+(y-c.pivotY)**2)}for(const key of c.nodeKeys){const n=nodes[key];if(n&&n.mass>0)inertia+=Math.min(.08,n.mass)*((n.position.x-c.pivotX)**2+n.position.y**2)}c.momentOfInertia=Math.max(.25,inertia);
+  c.key=`${[...c.nodeKeys].sort().join('|')}`;let dyn=previous[c.key];if(!dyn){let overlapBest=0;for(const old of Object.values(previous)){const oldKeys=old.nodeKeys instanceof Set?old.nodeKeys:new Set(old.nodeKeys||[]);let overlap=0;for(const k of c.nodeKeys)if(oldKeys.has(k))overlap++;if(overlap>overlapBest){overlapBest=overlap;dyn=old}}}dyn={rotation:Number(dyn?.rotation)||0,angularVelocity:Number(dyn?.angularVelocity)||0,angularAcceleration:Number(dyn?.angularAcceleration)||0,torque:Number(dyn?.torque)||0,isRotating:!!dyn?.isRotating,pivotX:c.pivotX,pivotY:0,momentOfInertia:c.momentOfInertia,nodeKeys:new Set(c.nodeKeys)};dyn.pivotX=c.pivotX;dyn.pivotY=0;dyn.momentOfInertia=c.momentOfInertia;c.dynamics=dyn;if(!c.shouldTip&&Math.abs(dyn.rotation)>.01)c.tippingDirection=dyn.rotation<0?'right':'left';nextDynamics[c.key]=dyn;for(const key of c.nodeKeys)nodeAssembly[key]=c.key;c.id=c.key;assemblies.push(c);byId[c.key]=c;
+ }
+ sim.assemblyDynamics=nextDynamics;sim.stability={assemblies,primary:null,nodeAssembly,byId};
+ const eligible=assemblies.filter(c=>c.members.length||c.supportPoints.length).sort((a,b)=>{const ar=a.supportPoints.length?1:0,br=b.supportPoints.length?1:0;if(ar!==br)return br-ar;return b.totalMass-a.totalMass});
+ const risk=eligible.filter(c=>c.shouldTip||c.isFloating).sort((a,b)=>b.totalMass-a.totalMass);sim.stability.primary=risk[0]||eligible[0]||null;
+ // Translational and rotational inertia are exposed in the live assembly details for diagnostics.
+ for(const c of assemblies){
+  const dyn=c.dynamics,angle=Math.abs(dyn.rotation),excess=Math.max(0,angle-CRITICAL_TILT),multiplier=Math.exp(Math.min(3.1,excess*6.0))*(dyn.isRotating?1+Math.min(1.3,Math.abs(dyn.angularVelocity)*.22):1);
+  for(const link of c.members){const e=link.e,base=Number(e.utilization)||0;e.dynamicUtilization=base*multiplier+(dyn.isRotating?Math.min(1.5,Math.abs(dyn.angularVelocity)*.12):0);if(e.dynamicUtilization>base){e.utilization=Math.max(base,e.dynamicUtilization);if(analysis){analysis.maxUtil=Math.max(analysis.maxUtil,e.utilization);if(base<=1&&e.utilization>1)analysis.overloaded++}}}
+ }
+}
+function calculateCollapseDynamics(assembly,dt){
+ const dyn=assembly.dynamics;if(!dyn)return;dyn.pivotX=assembly.pivotX;dyn.pivotY=0;dyn.momentOfInertia=assembly.momentOfInertia;
+ if(assembly.shouldTip){const leverArm=assembly.comX-assembly.pivotX;dyn.torque=-leverArm*assembly.totalMass*GRAVITY;dyn.angularAcceleration=clamp(dyn.torque/Math.max(.25,dyn.momentOfInertia),-4,4);dyn.isRotating=true;}
+ else{dyn.torque=0;dyn.angularAcceleration=0;dyn.angularVelocity*=Math.exp(-ROTATION_DAMPING*dt);if(Math.abs(dyn.angularVelocity)<.008&&Math.abs(dyn.rotation)<.006){dyn.angularVelocity=0;dyn.rotation=0;dyn.isRotating=false}}
+ dyn.angularVelocity=clamp(dyn.angularVelocity+dyn.angularAcceleration*dt,-2.8,2.8);dyn.rotation+=dyn.angularVelocity*dt;
+ if(Math.abs(dyn.rotation)>CRITICAL_TILT&&assembly.members.length&&sim.time>=sim.eventUntil-.04){sim.lastEvent=`OVERTURNING INSTABILITY · ${assembly.tippingDirection.toUpperCase()}`;sim.eventUntil=sim.time+2.5}
+}
+function updateStabilityDynamics(dt){calculateStability(lastAnalysis||analyzeStructure());for(const assembly of sim.stability.assemblies)calculateCollapseDynamics(assembly,dt)}
+function refreshAnalysis(){refreshMemberTopology();lastAnalysis=analyzeStructure();calculateStability(lastAnalysis);return lastAnalysis}
+function refreshAll(){refreshAnalysis();updateMetrics();draw()}
+function updateMetrics(){const a=lastAnalysis||refreshAnalysis();$('utilMetric').textContent=a.maxUtil>=9?'∞':`${Math.round(a.maxUtil*100)}%`;$('utilMetric').style.color=a.maxUtil>=1?'#ff8290':a.maxUtil>=.72?'#ffcf73':'#73dfd1';$('memberMetric').textContent=`${a.memberCount} / ${Object.keys(BuildingMap.loads).length}`;const jointIntegrity=sim.connections.length?sim.connections.filter(c=>!c.broken).length/sim.connections.length:1;const overallIntegrity=.82*a.integrity+.18*jointIntegrity;$('integrityMetric').textContent=`${Math.round(overallIntegrity*100)}%`;$('timeMetric').textContent=`${sim.time.toFixed(1)} s`;$('stateMetric').textContent=sim.running?'Running · node/member physics':'Paused · editable';$('impactMetric').textContent=sim.lastImpactEnergy?sim.lastImpactEnergy.toFixed(2):'—';$('impactSub').textContent=sim.lastImpactEnergy?`${sim.lastImpactOutcome||'IMPACT'} · Level ${sim.lastImpactStory+1} · force ${sim.lastImpactForce.toFixed(1)} units`:'No impact recorded';const stability=sim.stability.primary;if(!stability){$('stabilityMetric').textContent=memberCount()?'NO STABLE ASSEMBLY':'—';$('stabilitySub').textContent=memberCount()?'No intact assembly with a connected foundation support':'Center of mass vs. base supports';$('stabilityMetric').style.color=memberCount()?'#ff8290':'#73dfd1'}else{const dyn=stability.dynamics,angle=Math.abs(dyn.rotation)*180/Math.PI;$('stabilityMetric').textContent=stability.supportPoints.length===0?'UNSUPPORTED':(stability.shouldTip||angle>=18)?`TILT ${angle.toFixed(0)}°`:`${Math.round(stability.stabilityMetric)}%`;$('stabilityMetric').style.color=stability.shouldTip||angle>=18?'#ff8290':stability.stabilityMetric<35?'#ffcf73':'#73dfd1';const margin=stability.supportPoints.length>1?stability.marginWorld/STORY_HEIGHT:Math.abs(stability.comX-(stability.supportPoints[0]?.x??stability.comX))/STORY_HEIGHT;$('stabilitySub').textContent=stability.supportPoints.length?`CoM margin ${stability.outside?'−':''}${Math.abs(margin).toFixed(2)} bays · ${stability.supportPoints.length} support(s) · ${angle.toFixed(1)}° tilt · ${sim.floatingClusters.length} floating cluster(s)`:`No foundation support in this assembly · ${sim.floatingClusters.length} floating cluster(s)`}$('liveDot').classList.toggle('running',sim.running);$('simulate').textContent=sim.running?'Ⅱ Pause':'▶ Simulate';const moving=sim.floors.slice(1).find(f=>f.isFalling||f.velocity.y<-.15);$('caseTitle').textContent=moving?`Independent member motion · level ${moving.level}`:(stability?.shouldTip||Math.abs(stability?.dynamics.rotation||0)>=CRITICAL_TILT)?`Directional instability · ${stability.tippingDirection}`:sim.running?'Sandbox physics running':`${a.count} components · ready`;}
+function setStatus(message,event=false){$(event?'eventInfo':'validationResult').textContent=message}
+function setMode(next){mode=next;dragging=false;lastDragKey='';lastDragPt=null;hover.valid=false;document.querySelectorAll('[data-mode]').forEach(b=>{b.classList.toggle('active',b.dataset.mode===mode);b.setAttribute('aria-pressed',String(b.dataset.mode===mode))});updateToolStatus();draw();}
+function updateToolStatus(){const label=mode==='build'?`Build · ${$('componentType').selectedOptions[0].text}`:mode==='demolish'?'Demolition · click or drag to delete':mode==='load'?'Apply load · click a bay':'Push · click a level to apply lateral impulse';$('toolStatus').textContent=label;$('canvasTip').textContent=mode==='build'?'Build: columns on vertical segments; beams and slabs on horizontal segments':mode==='demolish'?'Demolish: click or drag to delete; slab strips sit just above beam lines; click debris to clear it':mode==='load'?'Apply load: click any bay to add mass':'Push: click a level to push the structure left or right';canvas.style.cursor=mode==='push'?'ew-resize':'crosshair'}
+function isGridTarget(px,py,kind){
+ if(px<GRID_LEFT-8||px>GRID_RIGHT+8||py<gridY(NY)-8||py>GROUND_Y+10)return false;
+ if(kind==='column'){
+  const x=Math.round((px-GRID_LEFT)/DX),lineX=GRID_LEFT+x*DX;
+  return x>=0&&x<=NX&&Math.abs(px-lineX)<=Math.max(11,DX*.22)&&py>=gridY(NY)-4&&py<=GROUND_Y+5;
+ }
+ if(px<GRID_LEFT-2||px>GRID_RIGHT+2)return false;
+ const level=clamp(Math.round((GROUND_Y-py)/STORY_PX),1,NY);
+ return Math.abs(py-gridY(level))<=13;
+}
+function snapColumn(px,py){let x=clamp(Math.round((px-GRID_LEFT)/DX),0,NX),story=0,best=Infinity;for(let y=0;y<NY;y++){const d=Math.abs(py-(gridY(y)+gridY(y+1))/2);if(d<best){best=d;story=y}}return{x,y:story}}
+function snapBay(px,py){let x=0,bestX=Infinity;for(let i=0;i<NX;i++){const d=Math.abs(px-(GRID_LEFT+(i+.5)*DX));if(d<bestX){bestX=d;x=i}}let y=1,bestY=Infinity;for(let i=1;i<=NY;i++){const d=Math.abs(py-gridY(i));if(d<bestY){bestY=d;y=i}}return{x,y}}
+function canvasCoords(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*(W/r.width),y:(e.clientY-r.top)*(H/r.height)}}
+function mutateLayout(msg){const analysis=refreshAnalysis();updateMetrics();draw();setStatus(msg,true);setStatus(`Design changed. Live estimates refreshed; peak modeled utilization is ${(analysis.maxUtil*100).toFixed(0)}%. Select Validate for a written structural check.`,false);if(sim.running)setStatus(msg+' Physics is continuing with the updated BuildingMap.',true)}
+function placeElement(x,y){const kind=$('componentType').value,material=$('material').value,key=keyOf(x,y),group={column:'columns',beam:'beams',slab:'slabs'}[kind],existing=BuildingMap[group][key];if(existing&&!existing.failed&&!existing.snapped&&existing.material===material){setStatus(`${kind} at (${x}, ${y}) already exists as ${MATERIALS[material].label}.`,true);return}for(const suffix of ['a','b'])delete sim.connectionStates[connectionId(`${group}|${key}`,suffix)];BuildingMap[group][key]=makeElement(kind,x,y,material);mutateLayout(`${MATERIALS[material].label} ${kind} placed at ${x}, ${y}.`)}
+function addLoad(x,y){const key=keyOf(x,y),amount=Number($('loadAmount').value);if(!BuildingMap.loads[key])BuildingMap.loads[key]={x,y,mass:0,capacity:0,integrity:1,failed:false,kind:'load'};BuildingMap.loads[key].mass=Math.min(100,BuildingMap.loads[key].mass+amount);mutateLayout(`Load at bay ${x+1}, level ${y} increased to ${BuildingMap.loads[key].mass.toFixed(1)} relative mass units.`)}
+function pointSegmentDistance(px,py,x1,y1,x2,y2){const dx=x2-x1,dy=y2-y1,den=dx*dx+dy*dy;const t=den?clamp(((px-x1)*dx+(py-y1)*dy)/den,0,1):0;return Math.hypot(px-(x1+t*dx),py-(y1+t*dy))}
+function nearestElement(px,py){let best=null;const consider=(group,key,e,x1,y1,x2,y2)=>{if(group!=='loads'&&group!=='debris'&&(e.failed||e.debrisSpawned))return;const d=pointSegmentDistance(px,py,x1,y1,x2,y2);if(!best||d<best.distance)best={group,key,e,distance:d}};for(const [key,e]of Object.entries(BuildingMap.columns))consider('columns',key,e,screenX(e.x,e.y),screenYNode(e.x,e.y),screenX(e.x,e.y+1),screenYNode(e.x,e.y+1));for(const group of ['beams','slabs'])for(const [key,e]of Object.entries(BuildingMap[group])){const offset=group==='slabs'?-5:0;consider(group,key,e,screenX(e.x,e.y),screenYNode(e.x,e.y)+offset,screenX(e.x+1,e.y),screenYNode(e.x+1,e.y)+offset)}for(const [key,e]of Object.entries(BuildingMap.loads)){const yy=(screenYNode(e.x,e.y)+screenYNode(e.x+1,e.y))/2,xx=(screenX(e.x,e.y)+screenX(e.x+1,e.y))/2;consider('loads',key,e,xx-5,yy-22,xx+5,yy-22)}for(const d of sim.debris){const dx=Math.cos(d.angle)*d.length*.5,dy=Math.sin(d.angle)*d.length*.5,x1=GRID_LEFT+(d.x-dx)/STORY_HEIGHT*DX,x2=GRID_LEFT+(d.x+dx)/STORY_HEIGHT*DX,y1=GROUND_Y-(d.y-dy)/STORY_HEIGHT*STORY_PX,y2=GROUND_Y-(d.y+dy)/STORY_HEIGHT*STORY_PX;consider('debris',String(d.id),d,x1,y1,x2,y2)}return best}
+function demolishAt(px,py){const found=nearestElement(px,py);if(!found||found.distance>19){lastDragKey='';return false}if(lastDragKey===found.group+'|'+found.key)return false;lastDragKey=found.group+'|'+found.key;if(found.group==='loads'){delete BuildingMap.loads[found.key];mutateLayout(`Removed load at coordinate ${found.key}.`);return true}if(found.group==='debris'){const index=sim.debris.findIndex(d=>String(d.id)===String(found.key));if(index<0)return false;sim.debris.splice(index,1);mutateLayout('Removed fallen debris from the scene. No structural ghost was left behind.');return true}const id=`${found.group}|${found.key}`;delete BuildingMap[found.group][found.key];for(const end of ['a','b'])delete sim.connectionStates[connectionId(id,end)];delete sim.overloadTimers[id];for(const k of Object.keys(sim.collisionPairs))if(k.includes(id))delete sim.collisionPairs[k];mutateLayout(`Deleted ${found.group.slice(0,-1)} at ${found.key}. The member vanished immediately; remaining support paths and loads were recalculated.`);return true}
+function pushAt(x,y,px){const dir=px<(GRID_LEFT+GRID_RIGHT)/2?-1:1;for(let level=Math.max(1,y);level<=NY;level++){const attenuation=Math.max(.35,1-(level-y)*.075);sim.lateralVel[level]+=dir*4.4*attenuation}for(const node of Object.values(sim.nodes))if(node.referenceLevel>=Math.max(1,y)&&!node.isGroundConnected)node.velocity.x+=dir*1.1;sim.running=true;syncButtons();setStatus(`Lateral impulse applied ${dir<0?'left':'right'} at level ${y}.`,true);updateMetrics()}
+function handleCanvasDown(e){
+ e.preventDefault();const p=canvasCoords(e);
+ if(mode==='build'){
+  const kind=$('componentType').value;
+  if(!isGridTarget(p.x,p.y,kind)){setStatus(kind==='column'?'Click a vertical grid segment to place a column.':'Click a horizontal grid segment to place this component.',true);return}
+  const pos=kind==='column'?snapColumn(p.x,p.y):snapBay(p.x,p.y);placeElement(pos.x,pos.y);
+ }else if(mode==='demolish'){
+  dragging=true;lastDragKey='';lastDragPt={x:p.x,y:p.y};demolishAt(p.x,p.y);canvas.setPointerCapture?.(e.pointerId);
+ }else if(mode==='load'||mode==='push'){
+  if(!isGridTarget(p.x,p.y,'bay')){setStatus('Click inside the grid, near a floor line, to target a bay or level.',true);return}
+  const pos=snapBay(p.x,p.y);if(mode==='load')addLoad(pos.x,pos.y);else pushAt(pos.x,pos.y,p.x);
+ }
+}
+function handlePointerMove(e){const p=canvasCoords(e),kind=$('componentType').value,valid=isGridTarget(p.x,p.y,mode==='build'?kind:'bay');const pos=kind==='column'?snapColumn(p.x,p.y):snapBay(p.x,p.y);hover={...pos,valid:valid&&mode!=='demolish'};if(dragging&&mode==='demolish'&&lastDragPt&&Math.hypot(p.x-lastDragPt.x,p.y-lastDragPt.y)>9){lastDragPt={x:p.x,y:p.y};demolishAt(p.x,p.y)}draw()}
+function handlePointerUp(){dragging=false;lastDragKey='';lastDragPt=null}
+function targetStoryElements(story,floorLevel){const targets=[];for(const e of Object.values(BuildingMap.columns))if(e.y===story)targets.push(e);for(const group of ['beams','slabs'])for(const e of Object.values(BuildingMap[group]))if(e.y===floorLevel)targets.push(e);return targets}
+function physicalComponent(nodeKey){
+ const adjacency=Object.create(null);for(const key of Object.keys(sim.nodes))adjacency[key]=[];
+ // Only unsevered joints transfer component mass. A member with one open end is a local hinge, not a support path.
+ for(const link of sim.memberLinks){if(!linkTransfersSupport(link))continue;adjacency[link.nodeA].push({node:link.nodeB,link});adjacency[link.nodeB].push({node:link.nodeA,link})}
+ const seenNodes=new Set([nodeKey]),memberIds=new Set(),queue=[nodeKey];while(queue.length){const key=queue.shift();for(const edge of adjacency[key]||[]){memberIds.add(edge.link.id);if(!seenNodes.has(edge.node)){seenNodes.add(edge.node);queue.push(edge.node)}}}
+ // A one-ended member contributes its own mass to the component on its still-attached side.
+ for(const link of sim.memberLinks){if(link.e.failed||link.e.integrity<=0)continue;if(!link.connectionA.broken&&seenNodes.has(link.nodeA))memberIds.add(link.id);if(!link.connectionB.broken&&seenNodes.has(link.nodeB))memberIds.add(link.id)}
+ let mass=0;for(const link of sim.memberLinks)if(memberIds.has(link.id))mass+=Math.max(.01,link.e.mass);for(const load of Object.values(BuildingMap.loads)){if(seenNodes.has(keyOf(load.x,load.y))||seenNodes.has(keyOf(load.x+1,load.y)))mass+=load.mass}
+ return {nodeKeys:seenNodes,memberIds,mass:Math.max(.05,mass),signature:[...memberIds].sort().join(';')||nodeKey};
+}
+function impactDurability(e){
+ const base=Math.max(.5,Number(e.durability)||Math.max(.5,e.capacity*IMPACT_ENERGY_PER_CAPACITY*(e.impactResistance||1)));
+ return base*Math.max(.08,clamp(e.integrity,0,1));
+}
+function applyTargetImpulse(link,hitPoint,vx,vy,sourceMass){
+ const e=link?.e,a=sim.nodes[link?.nodeA],b=sim.nodes[link?.nodeB];if(!e||!a||!b)return {dvx:0,dvy:0};
+ const dx=b.position.x-a.position.x,dy=b.position.y-a.position.y,den=dx*dx+dy*dy;
+ const t=den>.0001?clamp(((hitPoint.x-a.position.x)*dx+(hitPoint.y-a.position.y)*dy)/den,0,1):.5;
+ const targetInertia=Math.max(.8,e.mass+e.capacity*.22+(a.mass+b.mass)*.12);
+ const impulseX=sourceMass*vx*IMPACT_MOMENTUM_TRANSFER*IMPACT_TRANSFER_EFFICIENCY;
+ const impulseY=sourceMass*vy*IMPACT_MOMENTUM_TRANSFER*IMPACT_TRANSFER_EFFICIENCY;
+ const dvx=clamp(impulseX/targetInertia,-2.2,2.2),dvy=clamp(impulseY/targetInertia,-2.2,2.2);
+ // Apply the transferred impulse to the nearest member ends using contact-point weights.
+ const wa=1-t,wb=t;
+ if(a.referenceLevel>0){a.velocity.x=clamp(a.velocity.x+dvx*wa,-5,5);a.velocity.y=clamp(a.velocity.y+dvy*wa,-MAX_FALL_SPEED,MAX_FALL_SPEED)}
+ if(b.referenceLevel>0){b.velocity.x=clamp(b.velocity.x+dvx*wb,-5,5);b.velocity.y=clamp(b.velocity.y+dvy*wb,-MAX_FALL_SPEED,MAX_FALL_SPEED)}
+ // Off-center hits add a small angular impulse to the member's visual deformation state.
+ const offset=t-.5;e.impactDeformation=clamp((e.impactDeformation||0)+Math.abs(offset)*Math.hypot(dvx,dvy)*.11,0,1.5);
+ e.lateralForce=(e.lateralForce||0)+dvx*e.mass;
+ return {dvx,dvy,t,impulse:Math.hypot(impulseX,impulseY)};
+}
+function impactOneMember(link,energy,impactForce,hitPoint,velocity,sourceMass,reason='impact',impulseShare=1){
+ const e=link?.e;if(!e||e.failed||e.snapped||e.integrity<=.001)return {failed:false,shattered:false};
+ const durability=impactDurability(e),energyRatio=energy/Math.max(.5,durability),normalizedForce=Math.max(0,impactForce)*IMPACT_FORCE_NORMALIZER;
+ const forceCapacity=Math.max(.5,e.capacity*(e.impactResistance||1)*Math.max(.12,e.integrity));
+ const forceRatio=normalizedForce/forceCapacity;
+ applyTargetImpulse(link,hitPoint,velocity.x,velocity.y,sourceMass*clamp(impulseShare,0,1));
+ e.lastImpactEnergy=(e.lastImpactEnergy||0)+energy;e.lastImpactTime=sim.time;e.impactDamage=clamp((e.impactDamage||0)+Math.min(.45,energyRatio*.16+forceRatio*.035),0,.98);
+ e.impactStress=clamp((e.impactStress||0)+Math.min(1.8,energyRatio*.12+forceRatio*.16),0,5);
+ e.impactDeformation=clamp((e.impactDeformation||0)+Math.min(.8,energyRatio*.3+forceRatio*.08),0,1.5);
+ e.integrity=clamp(e.integrity-Math.min(.58,energyRatio*.14+forceRatio*.035),0,1);e.structuralIntegrity=e.integrity;
+ const endA=link.connectionA,endB=link.connectionB,nearA=Math.hypot(hitPoint.x-sim.nodes[link.nodeA].position.x,hitPoint.y-sim.nodes[link.nodeA].position.y)<=Math.hypot(hitPoint.x-sim.nodes[link.nodeB].position.x,hitPoint.y-sim.nodes[link.nodeB].position.y),hitConnection=nearA?endA:endB;
+ const forceFracture=forceRatio>=1.2,energyFracture=energy>=durability,fracture=forceFracture||energyFracture;
+ if(fracture){failMember(link,`SHATTERED BY IMPACT · ${reason} · ${energy.toFixed(1)} energy / ${durability.toFixed(1)} durability`);return {failed:true,shattered:true,energyRatio,forceRatio}}
+ if(hitConnection&&!hitConnection.broken&&forceRatio>.72){hitConnection.break(`impact shear · normalized force ${normalizedForce.toFixed(2)}`);e.impactStress=clamp(e.impactStress+.1,0,5)}
+ if(e.integrity<=FAILURE_INTEGRITY||(e.utilization||0)+e.impactStress>1.48&&energyRatio>.18){failMember(link,`impact deformation exceeded remaining integrity · ${reason}`);return {failed:true,shattered:false,energyRatio,forceRatio}}
+ e.state='DEFORMED';return {failed:false,shattered:false,energyRatio,forceRatio};
+}
+function propagateShockwave(originLink,energy,hitPoint,velocity={x:0,y:0}){
+ if(!originLink||energy<=.01)return {count:0,failed:0};const endpointSet=new Set([originLink.nodeA,originLink.nodeB]),neighbors=[];
+ for(const link of sim.memberLinks){if(link.id===originLink.id||link.e.failed||link.e.snapped||link.e.integrity<=.001)continue;const shared=[link.nodeA,link.nodeB].filter(key=>endpointSet.has(key));if(shared.some(key=>!(key===link.nodeA?link.connectionA:link.connectionB).broken))neighbors.push(link)}
+ const unique=[...new Map(neighbors.map(l=>[l.id,l])).values()];let failed=0;
+ for(const link of unique){const e=link.e,share=energy/Math.max(1,unique.length),durability=impactDurability(e),ratio=share/Math.max(.5,durability);e.impactStress=clamp((e.impactStress||0)+Math.min(1.8,ratio*.42),0,5);e.impactDamage=clamp((e.impactDamage||0)+Math.min(.28,ratio*.055),0,.98);e.impactDeformation=clamp((e.impactDeformation||0)+Math.min(.42,ratio*.16),0,1.5);e.integrity=clamp(e.integrity-Math.min(.3,ratio*.07),0,1);e.structuralIntegrity=e.integrity;e.lastImpactEnergy=(e.lastImpactEnergy||0)+share;e.lastImpactTime=sim.time;
+  // A small part of the shock impulse reaches the adjacent joint, but it decays with distance.
+  for(const key of [link.nodeA,link.nodeB]){const n=sim.nodes[key];if(!n||n.referenceLevel===0)continue;n.velocity.x=clamp(n.velocity.x+Math.sign(n.position.x-hitPoint.x||1)*Math.min(.32,ratio*.045),-5,5);n.velocity.y=clamp(n.velocity.y+Math.min(.22,ratio*.025),-MAX_FALL_SPEED,MAX_FALL_SPEED)}
+  if(share>=durability*.5||((e.utilization||0)+e.impactStress>1.25&&ratio>.12)||e.integrity<=FAILURE_INTEGRITY){if(failMember(link,`SHOCKWAVE FRACTURE · ${share.toFixed(1)} transferred energy`))failed++}
+ }
+ return {count:unique.length,failed};
+}
+function handleMemberImpact(node,targetLink,relativeSpeed,body){
+ const cooldownKey=`${body.signature}|level:${targetLink.e.y}`;if(sim.time-(sim.collisionPairs[cooldownKey]??-Infinity)<.45)return;sim.collisionPairs[cooldownKey]=sim.time;
+ const mass=Math.max(.02,body.mass||.02),incoming={x:Number(node.velocity?.x)||0,y:Number(node.velocity?.y)||0},hitLink=targetLink,na=sim.nodes[hitLink.nodeA],nb=sim.nodes[hitLink.nodeB],dx=(nb?.position.x||0)-(na?.position.x||0),dy=(nb?.position.y||0)-(na?.position.y||0),den=dx*dx+dy*dy,t=den>.0001?clamp(((node.position.x-(na?.position.x||0))*dx+(node.position.y-(na?.position.y||0))*dy)/den,0,1):.5,targetVx=na&&nb?na.velocity.x+(nb.velocity.x-na.velocity.x)*t:0,targetVy=na&&nb?na.velocity.y+(nb.velocity.y-na.velocity.y)*t:0,velocity={x:incoming.x-targetVx,y:incoming.y-targetVy},speed=Math.max(0,relativeSpeed,Math.hypot(velocity.x,velocity.y));if(Math.hypot(velocity.x,velocity.y)<.02)velocity.y=-speed;
+ const raw=.5*mass*speed*speed,transfer=raw*(1-IMPACT_RESTITUTION*IMPACT_RESTITUTION)*IMPACT_TRANSFER_EFFICIENCY,impulse=mass*speed,force=impulse/IMPACT_DURATION,normalizedForce=force*IMPACT_FORCE_NORMALIZER;
+ sim.lastRawEnergy=raw;sim.lastImpactEnergy=transfer;sim.lastImpactForce=force;sim.lastImpactStory=Math.max(0,targetLink.e.y-1);sim.lastImpactOutcome='IMPACT';
+ const targetLevel=targetLink.e.y,gx=node.position.x/STORY_HEIGHT;
+ const local=targetStoryElements(targetLevel-1,targetLevel).filter(e=>{if(e.kind==='column')return Math.abs(e.x-gx)<=1.05;return gx>=e.x-.05&&gx<=e.x+1.05}).filter(e=>!e.failed&&!e.snapped);
+ if(!local.includes(targetLink.e)&&!targetLink.e.failed&&!targetLink.e.snapped)local.unshift(targetLink.e);
+ const entries=local.map(e=>{const proximity=e===targetLink.e?2.2:e.kind==='column'?Math.max(.18,1-Math.abs(e.x-gx)*.68):Math.max(.2,1-Math.abs((e.x+.5)-gx)*.65);return {e,weight:proximity}}),weightSum=entries.reduce((s,v)=>s+v.weight,0)||1;
+ let failed=0,shattered=0,deformed=0,primaryLink=null;
+ for(const item of entries){const e=item.e,group=e.kind==='column'?'columns':e.kind==='beam'?'beams':'slabs',link=sim.memberLinks.find(l=>l.id===`${group}|${keyOf(e.x,e.y)}`);if(!link)continue;if(e===targetLink.e)primaryLink=link;const energyShare=transfer*(1-SHOCKWAVE_TRANSFER)*item.weight/weightSum;const result=impactOneMember(link,energyShare,force*item.weight/weightSum,node.position,velocity,mass,'falling member',item.weight/weightSum);if(result.failed)failed++;if(result.shattered)shattered++;if(!result.failed)deformed++}
+ const shockEnergy=transfer*SHOCKWAVE_TRANSFER,shock=propagateShockwave(primaryLink||targetLink,shockEnergy,node.position,velocity);failed+=shock.failed;
+ const storySummary=sim.floors[targetLevel];storySummary.lastImpactTime=sim.time;storySummary.structuralIntegrity=local.length?local.reduce((sum,e)=>sum+e.integrity,0)/local.length:storySummary.structuralIntegrity;storySummary.integrity=storySummary.structuralIntegrity;
+ sim.lastImpactOutcome=shattered?'SHATTERED':failed?'CASCADE FRACTURE':deformed?'DEFORMED + SHOCKWAVE':'SHOCKWAVE';sim.lastEvent=shattered?`IMPACT SHATTER · LEVEL ${targetLevel}`:failed?`LOCAL IMPACT CASCADE · LEVEL ${targetLevel}`:shock.count?`IMPACT SHOCKWAVE · ${shock.count} NEIGHBOR(S)`:`IMPACT ABSORBED · LEVEL ${targetLevel}`;sim.eventUntil=sim.time+4;node.lastImpactTime=sim.time;
+ setStatus(`${sim.lastEvent}. Kinetic energy ${raw.toFixed(2)}; transferred ${transfer.toFixed(2)}; impulse ${impulse.toFixed(2)}; force estimate ${force.toFixed(1)} units.`,true);refreshAnalysis();
+}
+function handleGroundImpact(node,speed,body){
+ if(speed<.5)return;
+ const cooldownKey=`${body.signature}|ground`;if(sim.time-(sim.collisionPairs[cooldownKey]??-Infinity)<.45)return;sim.collisionPairs[cooldownKey]=sim.time;
+ const mass=Math.max(.02,body.mass||.02),velocity={x:Number(node.velocity?.x)||0,y:Number(node.velocity?.y)||0};if(Math.hypot(velocity.x,velocity.y)<.02)velocity.y=-speed;speed=Math.max(speed,Math.hypot(velocity.x,velocity.y));const raw=.5*mass*speed*speed,transfer=raw*(1-IMPACT_RESTITUTION*IMPACT_RESTITUTION)*IMPACT_TRANSFER_EFFICIENCY,impulse=mass*speed,force=impulse/IMPACT_DURATION,gx=node.position.x/STORY_HEIGHT;
+ sim.lastRawEnergy=raw;sim.lastImpactEnergy=transfer;sim.lastImpactForce=force;sim.lastImpactStory=0;sim.lastImpactOutcome='GROUND IMPACT';
+ // Ground impacts load the nearest surviving foundation members, not the collapsing assembly itself.
+ let candidates=sim.memberLinks.filter(link=>!body.memberIds?.has(link.id)&&link.e.kind==='column'&&link.e.y===0&&!link.e.failed&&!link.e.snapped&&link.e.integrity>0).sort((a,b)=>Math.abs(a.e.x-gx)-Math.abs(b.e.x-gx));
+ if(!candidates.length)candidates=sim.memberLinks.filter(link=>link.e.kind==='column'&&link.e.y===0&&!link.e.failed&&!link.e.snapped&&link.e.integrity>0).sort((a,b)=>Math.abs(a.e.x-gx)-Math.abs(b.e.x-gx));
+ const local=candidates.filter(link=>Math.abs(link.e.x-gx)<=1.4).slice(0,4);if(!local.length)local.push(...candidates.slice(0,Math.min(2,candidates.length)));
+ const contactWeights=local.map(link=>1/(.35+Math.abs(link.e.x-gx))),contactWeightSum=contactWeights.reduce((sum,w)=>sum+w,0)||1;let failed=0,shattered=0;
+ for(let i=0;i<local.length;i++){const link=local[i],share=contactWeights[i]/contactWeightSum,allocated=transfer*(1-SHOCKWAVE_TRANSFER)*share;const result=impactOneMember(link,allocated,force*share,node.position,velocity,mass,'ground impact',share);if(result.failed)failed++;if(result.shattered)shattered++}
+ const shock=local.length?propagateShockwave(local[0],transfer*SHOCKWAVE_TRANSFER,{x:node.position.x,y:0},velocity):{count:0,failed:0};failed+=shock.failed;
+ sim.lastImpactOutcome=shattered?'GROUND SHATTER':failed?'GROUND SHOCK CASCADE':'GROUND DEFORMATION';sim.lastEvent=shattered?`GROUND IMPACT SHATTER · ${shattered} MEMBER(S)`:failed?`GROUND SHOCKWAVE FAILURE · ${failed} MEMBER(S)`:shock.count?'GROUND SHOCKWAVE · FOUNDATION MEMBERS DEFORMED':'GROUND CONTACT';sim.eventUntil=sim.time+4;
+ const story=sim.floors[1];story.lastImpactTime=sim.time;if(local.length){story.structuralIntegrity=local.reduce((sum,link)=>sum+link.e.integrity,0)/local.length;story.integrity=story.structuralIntegrity}
+ setStatus(`${sim.lastEvent}. Kinetic energy ${raw.toFixed(2)}; transferred ${transfer.toFixed(2)}; impulse ${impulse.toFixed(2)}; force estimate ${force.toFixed(1)} units.`,true);if(failed||shock.count)refreshAnalysis();
+}
+function resolveNodeCollisions(previousY){
+ const nodes=Object.values(sim.nodes);
+ for(const node of nodes){
+  const asm=sim.stability.byId[sim.stability.nodeAssembly[node.key]],rotating=!!(asm&&asm.dynamics.isRotating&&asm.supportPoints.length);if((node.isGroundConnected&&!rotating)||node.referenceLevel===0)continue;
+  if(node.position.y<=FLOOR_THICKNESS){const speed=Math.max(0,-node.velocity.y),body=physicalComponent(node.key),impactNode={key:node.key,position:{x:node.position.x,y:0},velocity:{x:node.velocity.x,y:node.velocity.y},lastImpactTime:node.lastImpactTime};node.position.y=FLOOR_THICKNESS;node.velocity.y=0;node.acceleration.y=0;if(speed>.5)handleGroundImpact(impactNode,speed,body);continue;}
+  const body=physicalComponent(node.key);let best=null;
+  for(const link of sim.memberLinks){const e=link.e;if((e.kind!=='slab'&&e.kind!=='beam')||e.failed||e.snapped||e.integrity<=0||e.y>=node.referenceLevel||body.memberIds.has(link.id))continue;
+   const na=sim.nodes[link.nodeA],nb=sim.nodes[link.nodeB];if(!na||!nb)continue;
+   const minX=Math.min(na.position.x,nb.position.x)-.04,maxX=Math.max(na.position.x,nb.position.x)+.04;if(node.position.x<minX||node.position.x>maxX)continue;
+   const dx=nb.position.x-na.position.x,t=Math.abs(dx)>.001?clamp((node.position.x-na.position.x)/dx,0,1):.5;const surfaceY=na.position.y+(nb.position.y-na.position.y)*t+FLOOR_THICKNESS,surfaceVy=na.velocity.y+(nb.velocity.y-na.velocity.y)*t;const before=previousY[node.key]??node.position.y;
+   if(before>=surfaceY-.04&&node.position.y<surfaceY&&surfaceVy-node.velocity.y>.02&&(!best||surfaceY>best.surfaceY))best={link,na,nb,surfaceY,surfaceVy,t};
+  }
+  // Settled near-horizontal debris can temporarily act as a weak obstacle under falling nodes.
+  for(const d of sim.debris){if(!d.settled||Math.abs(d.angle)>.42)continue;const half=d.length*.5,lo=d.x-half,hi=d.x+half;if(node.position.x<lo||node.position.x>hi)continue;const surfaceY=d.y+d.thickness*.5,before=previousY[node.key]??node.position.y;if(before>=surfaceY-.04&&node.position.y<surfaceY&&-node.velocity.y>.02&&(!best||surfaceY>best.surfaceY))best={debris:d,surfaceY,surfaceVy:0,t:.5};}
+  if(best){const incoming={key:node.key,position:{x:node.position.x,y:best.surfaceY},velocity:{x:node.velocity.x,y:node.velocity.y},lastImpactTime:node.lastImpactTime},targetVel=best.surfaceVy??(best.na?best.na.velocity.y+(best.nb.velocity.y-best.na.velocity.y)*best.t:0),rel=Math.max(0,targetVel-node.velocity.y);node.position.y=best.surfaceY;node.velocity.y=targetVel+rel*IMPACT_RESTITUTION;node.velocity.x*=.96;node.acceleration.y=0;if(best.link&&rel>.35)handleMemberImpact(incoming,best.link,rel,body);else if(best.debris&&rel>.45){const d=best.debris;d.settled=false;d.grounded=false;d.vx=clamp(d.vx+node.velocity.x*Math.max(.02,node.mass)/Math.max(.05,d.mass)*.08,-MAX_FALL_SPEED,MAX_FALL_SPEED);d.vy=clamp(d.vy-rel*Math.max(.02,node.mass)/Math.max(.05,d.mass)*.10,-MAX_FALL_SPEED,MAX_FALL_SPEED);d.angularVelocity=clamp(d.angularVelocity+(node.position.x-d.x)*rel*.025,-2.6,2.6);}}
+ }
+}
+function projectMemberConstraints(){
+ for(let iteration=0;iteration<6;iteration++){
+  for(const link of sim.memberLinks){const e=link.e;if(e.failed||e.snapped||e.integrity<=0)continue;const a=sim.nodes[link.nodeA],b=sim.nodes[link.nodeB];if(!a||!b)continue;
+   const dx=b.position.x-a.position.x,dy=b.position.y-a.position.y,dist=Math.hypot(dx,dy);if(dist<1e-5)continue;
+   const error=(dist-link.restLength)/dist,wa=a.referenceLevel===0?0:1/Math.max(.1,a.mass),wb=b.referenceLevel===0?0:1/Math.max(.1,b.mass),sum=wa+wb;if(sum<=0)continue;
+   const corrX=dx*error,corrY=dy*error;
+   a.position.x+=corrX*wa/sum;a.position.y+=corrY*wa/sum;b.position.x-=corrX*wb/sum;b.position.y-=corrY*wb/sum;
+  }
+ }
+}
+function updateMemberPhysics(dt){
+ refreshMemberTopology();calculateStability(lastAnalysis||analyzeStructure());
+ const previousY=Object.create(null),stability=sim.stability,nodeAssembly=stability.nodeAssembly,byId=stability.byId,snapForces=Object.create(null);
+ const spanPulls=Object.create(null);for(const link of sim.memberLinks){const e=link.e;if(e.kind!=='beam'||!e.snapped||e.failed)continue;const a=sim.nodes[link.nodeA],b=sim.nodes[link.nodeB];if(!a||!b)continue;const center=Number.isFinite(e.snapCenterX)?e.snapCenterX:(a.position.x+b.position.x)*.5,sagFactor=clamp((e.snapSag||0)/(STORY_HEIGHT*.55),0,1),pull=clamp((.55+.44*Math.max(1,e.momentUtilization))*sagFactor,0,3.4);snapForces[link.nodeA]=(snapForces[link.nodeA]||0)+Math.sign(center-a.position.x)*pull;snapForces[link.nodeB]=(snapForces[link.nodeB]||0)+Math.sign(center-b.position.x)*pull;const groupKey=`${e.y}:${e.snapLeft}:${e.snapRight}`,row=spanPulls[groupKey]||(spanPulls[groupKey]={level:e.y,left:e.snapLeft,right:e.snapRight,center,pull:0});row.pull=Math.max(row.pull,clamp((.45+.34*Math.max(1,e.momentUtilization))*sagFactor,0,2.2))}for(const row of Object.values(spanPulls)){for(const x of [row.left,row.right]){const nodeKey=keyOf(x,row.level),n=sim.nodes[nodeKey];if(n)snapForces[nodeKey]=(snapForces[nodeKey]||0)+Math.sign(row.center-n.position.x)*row.pull;}}
+ for(const node of Object.values(sim.nodes)){
+  previousY[node.key]=node.position.y;
+  if(node.referenceLevel===0){node.position.x=node.reference.x;node.position.y=0;node.velocity.x=0;node.velocity.y=0;node.acceleration.x=0;node.acceleration.y=0;continue;}
+  const assembly=byId[nodeAssembly[node.key]],dyn=assembly?.dynamics,rotating=!!(dyn&&dyn.isRotating&&assembly.supportPoints.length);
+  if(node.isGroundConnected&&!rotating){node.acceleration.x=-2.4*(node.position.x-node.reference.x)-1.15*node.velocity.x+(snapForces[node.key]||0);node.acceleration.y=0;node.velocity.x=clamp(node.velocity.x+node.acceleration.x*dt,-5,5);node.position.x+=node.velocity.x*dt;node.position.y=node.reference.y;node.velocity.y=0;node.acceleration.y=0;continue}
+  node.acceleration.x=-.22*node.velocity.x+(snapForces[node.key]||0);node.acceleration.y=node.isGroundConnected?0:-GRAVITY;
+  if(rotating){
+   // Angular acceleration is applied about the remaining support pivot. In the y-up world
+   // coordinates, alpha × r = (-alpha * ry, alpha * rx).
+   const rx=node.position.x-dyn.pivotX,ry=node.position.y-dyn.pivotY;
+   node.acceleration.x+=-dyn.angularAcceleration*ry;
+   node.acceleration.y+=dyn.angularAcceleration*rx;
+  }
+  node.velocity.x=clamp(node.velocity.x+node.acceleration.x*dt,-5,5);
+  node.velocity.y=clamp(node.velocity.y+node.acceleration.y*dt,-MAX_FALL_SPEED,MAX_FALL_SPEED);
+  node.position.x+=node.velocity.x*dt;node.position.y+=node.velocity.y*dt;
+ }
+ projectMemberConstraints();resolveNodeCollisions(previousY);projectMemberConstraints();resolveNodeCollisions(previousY);
+ for(const node of Object.values(sim.nodes)){if(node.position.y<FLOOR_THICKNESS){node.position.y=FLOOR_THICKNESS;if(node.velocity.y<0)node.velocity.y=0}if(node.referenceLevel===0){node.position.x=node.reference.x;node.position.y=0;node.velocity.x=0;node.velocity.y=0}}
+ refreshMemberTopology();calculateStability(lastAnalysis||analyzeStructure());
+}
+function updateDebris(dt){
+ for(let i=sim.debris.length-1;i>=0;i--){const d=sim.debris[i];d.age+=dt;if(d.age>26){sim.debris.splice(i,1);continue}if(d.settled)continue;
+  const oldX=d.x,oldY=d.y,oldBounds=updateDebrisBounds(d),oldBottom=oldBounds.bottom;
+  d.vx*=Math.exp(-.18*dt);d.vy=clamp(d.vy-GRAVITY*dt,-MAX_FALL_SPEED,MAX_FALL_SPEED);d.angularVelocity*=Math.exp(-.16*dt);d.x+=d.vx*dt;d.y+=d.vy*dt;d.angle+=d.angularVelocity*dt;
+  const bounds=updateDebrisBounds(d),halfY=(bounds.top-bounds.bottom)*.5;let contact=null;
+  for(const link of sim.memberLinks){const e=link.e;if(e.failed||e.snapped||(e.kind!=='beam'&&e.kind!=='slab')||e.integrity<=.01)continue;const a=sim.nodes[link.nodeA],b=sim.nodes[link.nodeB];if(!a||!b)continue;const left=Math.min(a.position.x,b.position.x),right=Math.max(a.position.x,b.position.x);if(bounds.right<left||bounds.left>right)continue;const x=clamp(d.x,left,right),dx=b.position.x-a.position.x,t=Math.abs(dx)>.001?clamp((x-a.position.x)/dx,0,1):.5,surface=a.position.y+(b.position.y-a.position.y)*t+FLOOR_THICKNESS;if(oldBottom>=surface-.03&&bounds.bottom<surface&&d.vy<0&&(!contact||surface>contact.surface))contact={link,surface,t,x};}
+  const groundHit=d.y-halfY<=0;
+  if(contact){const speed=Math.max(0,-d.vy),target=contact.link,impactNode={position:{x:d.x,y:d.y},velocity:{x:d.vx,y:d.vy},lastImpactTime:sim.time};d.y=contact.surface+halfY;d.vy=speed*IMPACT_RESTITUTION;const hitX=contact.x??d.x,midX=(sim.nodes[target.nodeA].position.x+sim.nodes[target.nodeB].position.x)*.5,arm=hitX-midX;d.angularVelocity=clamp(d.angularVelocity+arm*speed*Math.max(.01,d.mass)/Math.max(.02,d.momentOfInertia)*.008,-2.6,2.6);d.vx=clamp(d.vx*(1-IMPACT_RESTITUTION)+Math.sign(d.vx||arm||1)*speed*.025,-MAX_FALL_SPEED,MAX_FALL_SPEED);d.impactCount=(d.impactCount||0)+1;d.reason+=' · impact '+d.impactCount;handleMemberImpact(impactNode,target,speed,{mass:d.mass,memberIds:new Set(),signature:`debris:${d.id}`});const nearVertical=d.kind==='column'&&Math.abs(Math.sin(d.angle))>.70;if(nearVertical)d.angularVelocity=d.tipDirection*Math.max(.42,Math.abs(d.angularVelocity));if(speed<.8&&Math.abs(d.angularVelocity)<.22&&(d.kind!=='column'||Math.abs(Math.sin(d.angle))<.80)){d.settled=true;d.vx=0;d.vy=0;d.angularVelocity=0;d.angle=Math.round(d.angle/(Math.PI/2))*(Math.PI/2);d.y=contact.surface+(Math.abs(Math.cos(d.angle))*d.thickness+Math.abs(Math.sin(d.angle))*d.length)*.5;}updateDebrisBounds(d);}
+  else if(groundHit){const speed=Math.max(0,-d.vy),impactNode={position:{x:d.x,y:d.y},velocity:{x:d.vx,y:d.vy},lastImpactTime:sim.time};d.y=halfY;d.vy=speed*IMPACT_RESTITUTION;d.vx*=.58;const nearVertical=d.kind==='column'&&Math.abs(Math.sin(d.angle))>.70;if(nearVertical){d.angularVelocity=d.tipDirection*Math.max(.42,Math.abs(d.angularVelocity));d.vx+=d.tipDirection*.03}else d.angularVelocity*=.45;const body={mass:d.mass,memberIds:new Set(),signature:`debris:${d.id}`};if(!d.grounded&&speed>.45)handleGroundImpact(impactNode,speed,body);d.grounded=true;if(speed<.65&&Math.abs(d.angularVelocity)<.16&&(d.kind!=='column'||Math.abs(Math.sin(d.angle))<.80)){d.settled=true;d.vx=0;d.vy=0;d.angularVelocity=0;d.y=halfY;}updateDebrisBounds(d);}
+  if(Math.abs(d.x)>NX*STORY_HEIGHT*1.8){d.x=clamp(d.x,-NX*STORY_HEIGHT*.5,NX*STORY_HEIGHT*1.5);d.vx*=-.25}
+ }
+}
+function snapBeamAtMidspan(link,bending){
+ const e=link?.e;if(!e||e.failed||e.snapped)return false;const a=sim.nodes[link.nodeA],b=sim.nodes[link.nodeB];if(!a||!b)return false;
+ e.snapped=true;e.state='SNAPPED';e.failureReason='mid-span bending moment exceeded modeled capacity';e.integrity=Math.min(e.integrity,.42);e.structuralIntegrity=e.integrity;e.snapSag=.025;e.snapVelocity=.06;e.snapAge=0;e.snapCenterX=bending.span.center*STORY_HEIGHT;e.snapLeft=bending.span.left;e.snapRight=bending.span.right;e.bendingMoment=bending.moment;e.momentUtilization=bending.moment/Math.max(.01,e.momentCapacity*e.integrity);e.momentOverloadTime=0;e.lateralForce=Math.min(8,bending.moment/Math.max(.1,e.momentCapacity));const matchingSlab=BuildingMap.slabs[keyOf(e.x,e.y)];if(matchingSlab&&!matchingSlab.failed){matchingSlab.snapped=true;matchingSlab.state='SNAPPED';matchingSlab.failureReason='floor deck hinged after supporting beam snapped';matchingSlab.integrity=Math.min(matchingSlab.integrity,.42);matchingSlab.structuralIntegrity=matchingSlab.integrity;matchingSlab.snapCenterX=e.snapCenterX;matchingSlab.snapSag=e.snapSag;}sim.localFailureCount++;sim.lastEvent=`MID-SPAN BEAM SNAP · BAY ${e.x+1} · LEVEL ${e.y}`;sim.eventUntil=sim.time+3.5;
+ // The two hinged halves tug toward the lost support region; node-level forces decide which columns lean or fail.
+ for(const key of [link.nodeA,link.nodeB]){const n=sim.nodes[key];if(n){n.velocity.x=clamp(n.velocity.x+Math.sign(e.snapCenterX-n.position.x)*.045*e.lateralForce,-5,5);n.isStressed=true}}
+ return true;
+}
+function evaluateBeamBending(dt){const candidates=[],bySpan=Object.create(null);for(const link of sim.memberLinks){const e=link.e;if(e.kind!=='beam'||e.failed||e.snapped||e.integrity<=.02)continue;const bending=beamBendingData(e);e.bendingMoment=bending.moment;e.effectiveSpan=bending.span.bays;e.momentUtilization=bending.moment/Math.max(.01,(e.momentCapacity||e.capacity*.42)*e.integrity);if(e.momentUtilization>1)e.momentOverloadTime=(e.momentOverloadTime||0)+dt;else e.momentOverloadTime=Math.max(0,(e.momentOverloadTime||0)-dt*.5);if(e.momentOverloadTime>=.08){const groupKey=`${e.y}:${bending.span.left}:${bending.span.right}`;const item={link,bending,util:e.momentUtilization};(bySpan[groupKey]||(bySpan[groupKey]=[])).push(item);candidates.push(item)}}let changed=false;for(const group of Object.values(bySpan)){const maxMoment=Math.max(...group.map(c=>c.bending.moment));for(const item of group){if(item.bending.moment>=maxMoment*.90)changed=snapBeamAtMidspan(item.link,item.bending)||changed}}if(changed){refreshAnalysis();setStatus('Bending failure: central beam bays snapped at mid-span. Hinged halves are sagging into a V and pulling nearby joints inward; columns beyond 15° tilt lose modeled capacity.',true)}return changed}
+function updateSnappedBeamHinges(dt){for(const link of sim.memberLinks){const e=link.e;if(e.kind!=='beam'||!e.snapped||e.failed)continue;e.snapAge=(e.snapAge||0)+dt;const targetAccel=GRAVITY*(.18+Math.min(1.1,Math.max(0,e.momentUtilization-1)*.16));e.snapVelocity=Math.min(3.2,(e.snapVelocity||0)+targetAccel*dt);e.snapSag=Math.min(STORY_HEIGHT*.70,(e.snapSag||0)+e.snapVelocity*dt)}}
+function evaluateColumnTiltFailures(){let changed=false;for(const link of sim.memberLinks){const e=link.e;if(e.kind!=='column'||e.failed||e.integrity<=0)continue;const a=sim.nodes[link.nodeA],b=sim.nodes[link.nodeB];if(!a||!b)continue;const dx=b.position.x-a.position.x,dy=b.position.y-a.position.y;e.tiltAngle=Math.atan2(Math.abs(dx),Math.max(.01,Math.abs(dy)));if(e.tiltAngle>COLUMN_TILT_LIMIT){failMember(link,`column tilt exceeded ${(COLUMN_TILT_LIMIT*180/Math.PI).toFixed(0)}° limit`);changed=true}}if(changed)refreshAnalysis();return changed}
+function stepPhysics(dt){
+ sim.time+=dt;let a=refreshAnalysis();updateStabilityDynamics(dt);evaluateBeamBending(dt);updateSnappedBeamHinges(dt);
+ // Member capacities degrade locally; tilt-induced demand feeds the same failure threshold.
+ for(const link of sim.memberLinks){const e=link.e;if(e.failed||e.snapped)continue;const util=e.utilization||0;if(util>1){sim.overloadTimers[link.id]=(sim.overloadTimers[link.id]||0)+dt;const rate=Math.min(.7,.14+(util-1)*.22);e.integrity=Math.max(0,e.integrity-dt*rate);if(e.integrity<=FAILURE_INTEGRITY){failMember(link,'sustained overload / local redistribution');sim.lastEvent=`OVERLOAD FAILURE · ${e.kind.toUpperCase()} (${link.key})`;sim.eventUntil=sim.time+3}}else sim.overloadTimers[link.id]=Math.max(0,(sim.overloadTimers[link.id]||0)-dt*.15)}
+ refreshAnalysis();
+ // Retain global lateral excitation while adding local angular motion about each assembly's remaining pivot.
+ const old=Array.from(sim.lateralDisp);for(let level=1;level<=NY;level++){const below=old[level-1]-old[level],above=level<NY?old[level+1]-old[level]:0;const ax=below*10+above*5-3.8*sim.lateralVel[level];sim.lateralVel[level]=clamp(sim.lateralVel[level]+ax*dt,-7,7);sim.lateralDisp[level]=clamp(sim.lateralDisp[level]+sim.lateralVel[level]*dt,-2.6,2.6);sim.floors[level].position.x=sim.lateralDisp[level];sim.floors[level].velocity.x=sim.lateralVel[level];sim.floors[level].acceleration.x=ax}
+ sim.lateralDisp[0]=0;sim.lateralVel[0]=0;updateMemberPhysics(dt);evaluateColumnTiltFailures();updateDebris(dt);a=refreshAnalysis();sim.peakUtil=Math.max(sim.peakUtil,a.maxUtil);lastAnalysis=a;
+}
+function drawGrid(){const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#0b1625');grad.addColorStop(1,'#09111c');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);ctx.save();ctx.strokeStyle='rgba(111,146,184,.11)';ctx.lineWidth=1;for(let x=0;x<=NX;x++){const xx=GRID_LEFT+x*DX;ctx.beginPath();ctx.moveTo(xx,75);ctx.lineTo(xx,GROUND_Y+5);ctx.stroke()}for(let y=0;y<=NY;y++){ctx.beginPath();ctx.moveTo(GRID_LEFT-35,gridY(y));ctx.lineTo(GRID_RIGHT+30,gridY(y));ctx.stroke()}ctx.fillStyle='#90a5bf';ctx.font='11px ui-monospace,monospace';ctx.textAlign='right';for(let y=1;y<=NY;y++)ctx.fillText(`L${String(y).padStart(2,'0')}`,GRID_LEFT-43,gridY(y)+4);ctx.textAlign='left';ctx.fillStyle='#8195ae';ctx.fillText('GROUND / BASE',GRID_LEFT-40,GROUND_Y+25);ctx.strokeStyle='#536b87';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(GRID_LEFT-24,GROUND_Y+2);ctx.lineTo(GRID_RIGHT+24,GROUND_Y+2);ctx.stroke();ctx.restore()}
+function elementColor(e){const display=$('displayMode').value;if(e.failed)return e.debrisSpawned?'#788697':'#ff526b';if(e.snapped)return Math.sin(sim.time*9)>0?'#ff526b':'#c64b62';if(display==='material')return materialColor(e.material);if(display==='integrity')return stressColor(1-clamp(e.integrity,0,1));if(display==='loadpath'){
+ const group=e.kind==='column'?'columns':e.kind==='beam'?'beams':'slabs',keys=endpointKeys(group,e),a=sim.nodes[keys[0]],b=sim.nodes[keys[1]];
+ if(a?.isGroundConnected&&b?.isGroundConnected)return '#43d7d0';if(a?.isGroundConnected||b?.isGroundConnected)return '#ffca69';return Math.sin(sim.time*9)>0?'#ff6578':'#647287';
+ }return stressColor(Math.max(e.utilization||0,e.dynamicUtilization||0))}
+function draw(){drawGrid();const levelY=l=>screenYLevel(l);const line=(x1,y1,x2,y2,color,width,dash=[])=>{ctx.save();ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap='round';ctx.setLineDash(dash);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.restore()};
+ // Beams and slabs are separate map elements; both carry their own utilization and integrity.
+ for(const [key,e]of Object.entries(BuildingMap.beams)){if(e.failed&&e.debrisSpawned)continue;const x1=screenX(e.x,e.y),y1=screenYNode(e.x,e.y),x2=screenX(e.x+1,e.y),y2=screenYNode(e.x+1,e.y);line(x1,y1,x2,y2,'rgba(2,8,16,.85)',9);if(e.snapped){const sag=(e.snapSag||0)/STORY_HEIGHT*STORY_PX,mx=(x1+x2)/2,my=(y1+y2)/2+sag;line(x1,y1,mx-4,my,'#ff526b',4.8,[4,2]);line(mx+4,my,x2,y2,'#ff526b',4.8,[4,2]);ctx.save();ctx.strokeStyle='#ffd0d7';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(mx-5,my-4);ctx.lineTo(mx+1,my+2);ctx.lineTo(mx-2,my+5);ctx.lineTo(mx+5,my+8);ctx.stroke();ctx.restore()}else{const mx=(x1+x2)/2,baseY=(y1+y2)/2,bend=clamp(e.impactDeformation||0,0,1.4)*15;ctx.save();ctx.strokeStyle=elementColor(e);ctx.lineWidth=4.8;ctx.lineCap='round';ctx.setLineDash(e.failed?[4,4]:[]);ctx.beginPath();ctx.moveTo(x1,y1);ctx.quadraticCurveTo(mx,baseY+bend,x2,y2);ctx.stroke();ctx.restore();if((e.integrity<.82||e.impactStress>.28)&&!e.failed){ctx.save();ctx.strokeStyle=e.impactStress>1?'#ff435e':'#ff6477';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(mx-4,baseY+bend-4);ctx.lineTo(mx+1,baseY+bend+1);ctx.lineTo(mx-2,baseY+bend+4);ctx.lineTo(mx+5,baseY+bend+7);ctx.stroke();ctx.restore()}}}
+ for(const [key,e]of Object.entries(BuildingMap.slabs)){if(e.failed&&e.debrisSpawned)continue;const x1=screenX(e.x,e.y),x2=screenX(e.x+1,e.y),baseY1=screenYNode(e.x,e.y)-5,baseY2=screenYNode(e.x+1,e.y)-5,beam=BuildingMap.beams[keyOf(e.x,e.y)],sag=(beam?.snapped?(beam.snapSag||0)/STORY_HEIGHT*STORY_PX*.72:0)+clamp((beam?.impactDeformation||0)+(e.impactDeformation||0)*.55,0,1.5)*10,y1=baseY1,y2=baseY2,ym=(y1+y2)/2+sag;ctx.save();ctx.fillStyle=elementColor(e);ctx.globalAlpha=e.failed?.72:.6;ctx.beginPath();ctx.moveTo(x1,y1-3);if(beam?.snapped)ctx.lineTo((x1+x2)/2,ym-3);ctx.lineTo(x2,y2-3);ctx.lineTo(x2,y2+3);if(beam?.snapped)ctx.lineTo((x1+x2)/2,ym+3);ctx.lineTo(x1,y1+3);ctx.closePath();ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle=(e.failed||e.snapped)?'#ff6477':'rgba(228,242,255,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x1,y1-3);if(beam?.snapped)ctx.lineTo((x1+x2)/2,ym-3);ctx.lineTo(x2,y2-3);ctx.lineTo(x2,y2+3);if(beam?.snapped)ctx.lineTo((x1+x2)/2,ym+3);ctx.lineTo(x1,y1+3);ctx.closePath();ctx.stroke();if(e.integrity<.82&&!e.failed||beam?.snapped){ctx.strokeStyle='#ff6477';ctx.beginPath();ctx.moveTo((x1+x2)/2-4,ym-4);ctx.lineTo((x1+x2)/2+2,ym);ctx.lineTo((x1+x2)/2-1,ym+3);ctx.stroke()}ctx.restore()}
+ for(const [key,e]of Object.entries(BuildingMap.columns)){if(e.failed&&e.debrisSpawned)continue;const x1=screenX(e.x,e.y),y1=screenYNode(e.x,e.y),x2=screenX(e.x,e.y+1),y2=screenYNode(e.x,e.y+1),xm=(x1+x2)/2,ym=(y1+y2)/2,bow=clamp(e.impactDeformation||0,0,1.3)*Math.sign(e.lateralForce||1)*10;line(x1,y1,xm+bow,ym,'rgba(1,7,16,.85)',10);line(xm+bow,ym,x2,y2,'rgba(1,7,16,.85)',10);line(x1,y1,xm+bow,ym,elementColor(e),5.5,e.failed?[5,4]:[]);line(xm+bow,ym,x2,y2,elementColor(e),5.5,e.failed?[5,4]:[]);if((e.integrity<.82||e.impactStress>.28)&&!e.failed){line(xm+bow-4,ym-6,xm+bow+2,ym-1,e.impactStress>1?'#ff435e':'#ff6477',1.6);line(xm+bow+2,ym-1,xm+bow-1,ym+3,'#ff6477',1.6)}}
+ for(const [key,e]of Object.entries(BuildingMap.loads)){const y=(screenYNode(e.x,e.y)+screenYNode(e.x+1,e.y))/2,x=(screenX(e.x,e.y)+screenX(e.x+1,e.y))/2;ctx.save();ctx.strokeStyle='#ffb86a';ctx.fillStyle='#ffb86a';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y-27);ctx.lineTo(x,y-8);ctx.stroke();ctx.beginPath();ctx.moveTo(x-5,y-13);ctx.lineTo(x,y-7);ctx.lineTo(x+5,y-13);ctx.closePath();ctx.fill();ctx.font='10px ui-monospace,monospace';ctx.textAlign='center';ctx.fillText(`+${e.mass.toFixed(1)}`,x,y-32);ctx.restore()}
+ // Broken member-end connections are shown explicitly at their actual joint location.
+ for(const connection of sim.connections){if(!connection.broken)continue;const node=sim.nodes[connection.nodeKey];if(!node)continue;const [gx,gy]=connection.nodeKey.split(',').map(Number),x=screenX(gx,gy),y=screenYNode(gx,gy);ctx.save();ctx.strokeStyle='#ff526b';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(x-5,y-5);ctx.lineTo(x+5,y+5);ctx.moveTo(x-5,y+5);ctx.lineTo(x+5,y-5);ctx.stroke();ctx.restore()}
+ drawStabilityVector();
+ // Detached members retain mass and collide with the ground or surviving floor members.
+ for(const d of sim.debris){const dx=Math.cos(d.angle)*d.length*.5,dy=Math.sin(d.angle)*d.length*.5,x1=GRID_LEFT+(d.x-dx)/STORY_HEIGHT*DX,x2=GRID_LEFT+(d.x+dx)/STORY_HEIGHT*DX,y1=GROUND_Y-(d.y-dy)/STORY_HEIGHT*STORY_PX,y2=GROUND_Y-(d.y+dy)/STORY_HEIGHT*STORY_PX;line(x1,y1,x2,y2,'rgba(1,7,16,.9)',d.thickness>.13?7:5);line(x1,y1,x2,y2,debrisColor(d),d.settled?4.1:4.4,d.settled?[]:[4,3]);if(d.impactCount>0||/shatter|impact/i.test(d.reason||'')){const mx=(x1+x2)/2,my=(y1+y2)/2;line(mx-4,my-3,mx+1,my+1,'#ffcc9b',1.5);line(mx+1,my+1,mx-1,my+5,'#ffcc9b',1.5)}if(!d.settled&&sim.running){ctx.fillStyle='#ffcf86';ctx.beginPath();ctx.arc((x1+x2)/2,(y1+y2)/2,2.2,0,Math.PI*2);ctx.fill()}}
+ for(const node of Object.values(sim.nodes)){if(node.referenceLevel===0)continue;const x=screenX(node.gridX,node.referenceLevel),y=screenYNode(node.gridX,node.referenceLevel);ctx.fillStyle=node.isGroundConnected?'rgba(214,237,255,.78)':'#ffb56c';ctx.beginPath();ctx.arc(x,y,2.3,0,Math.PI*2);ctx.fill()}
+ if($('displayMode').value==='loadpath'){
+  for(const [key,e]of Object.entries(BuildingMap.columns)){if(e.failed)continue;const x=screenX(e.x,e.y),yTop=screenYNode(e.x,e.y+1),yBot=screenYNode(e.x,e.y);const bottom=sim.nodes[keyOf(e.x,e.y)],top=sim.nodes[keyOf(e.x,e.y+1)];ctx.save();ctx.strokeStyle=bottom?.isGroundConnected&&top?.isGroundConnected?'rgba(67,215,208,.85)':'rgba(255,101,120,.82)';ctx.fillStyle=ctx.strokeStyle;ctx.lineWidth=1.4;ctx.setLineDash(bottom?.isGroundConnected&&top?.isGroundConnected?[]:[4,4]);ctx.beginPath();ctx.moveTo(x,yTop+5);ctx.lineTo(x,yBot-5);ctx.stroke();ctx.setLineDash([]);if(bottom?.isGroundConnected&&top?.isGroundConnected){ctx.beginPath();ctx.moveTo(x-3,yBot-10);ctx.lineTo(x,yBot-4);ctx.lineTo(x+3,yBot-10);ctx.closePath();ctx.fill()}ctx.restore()}
+ }
+ // Unsupported bays are highlighted with a dashed warning outline before physics begins.
+ const a=lastAnalysis||analyzeStructure();for(const b of a.unsupportedFloors){const x1=GRID_LEFT+b.x*DX,x2=x1+DX,y=screenYLevel(b.y);ctx.save();ctx.strokeStyle='rgba(255,101,120,.75)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.strokeRect(x1+3,y-12,x2-x1-6,20);ctx.restore()}
+ // Editor hover preview snaps to a grid segment.
+ if(hover.valid&&!sim.running&&mode!=='demolish'){const x=hover.x,y=hover.y;ctx.save();ctx.strokeStyle='rgba(75,220,222,.8)';ctx.lineWidth=2;ctx.setLineDash([4,4]);if(mode==='build'&&$('componentType').value==='column'){const xx=GRID_LEFT+x*DX;ctx.beginPath();ctx.moveTo(xx,gridY(y));ctx.lineTo(xx,gridY(y+1));ctx.stroke()}else{const xx=GRID_LEFT+x*DX,yy=gridY(y);ctx.strokeRect(xx+2,yy-9,DX-4,18)}ctx.restore()}
+ if(sim.lastEvent&&sim.time<sim.eventUntil&&sim.time>0){ctx.save();ctx.fillStyle='rgba(52,24,36,.9)';ctx.strokeStyle='rgba(255,103,120,.65)';ctx.beginPath();ctx.roundRect(650,24,410,35,8);ctx.fill();ctx.stroke();ctx.fillStyle='#ffacb6';ctx.font='bold 11px ui-monospace,monospace';ctx.textAlign='center';ctx.fillText(sim.lastEvent.slice(0,58),855,46);ctx.restore()}
+}
+function drawStabilityVector(){
+ const st=sim.stability.primary;if(!st||!st.members.length&&!st.supportPoints.length)return;
+ const gridX=st.comX/STORY_HEIGHT,gridYValue=st.comY/STORY_HEIGHT,level=Math.round(clamp(gridYValue,0,NY));
+ const comX=GRID_LEFT+gridX*DX+sim.lateralDisp[level]*23,comY=GROUND_Y-gridYValue*STORY_PX;
+ const projectedX=GRID_LEFT+(st.projectedX/STORY_HEIGHT)*DX,baseY=GROUND_Y-8;
+ const left=st.supportPoints.length?GRID_LEFT+(st.minSupportX/STORY_HEIGHT)*DX:GRID_LEFT,right=st.supportPoints.length?GRID_LEFT+(st.maxSupportX/STORY_HEIGHT)*DX:GRID_LEFT;
+ const danger=st.shouldTip||Math.abs(st.dynamics.rotation)>=CRITICAL_TILT,color=danger?'#ff6578':st.stabilityMetric<35?'#ffca69':'#43d7d0';
+ ctx.save();ctx.lineWidth=1.8;ctx.strokeStyle=color;ctx.fillStyle=color;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(comX,comY);ctx.lineTo(comX,baseY);ctx.stroke();ctx.setLineDash([]);
+ if(st.supportPoints.length){ctx.lineWidth=4;ctx.globalAlpha=.8;ctx.beginPath();ctx.moveTo(left,baseY);ctx.lineTo(right,baseY);ctx.stroke();ctx.globalAlpha=1;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(comX,baseY);ctx.lineTo(projectedX,baseY);ctx.stroke();ctx.beginPath();ctx.arc(projectedX,baseY,4,0,Math.PI*2);ctx.fill()}
+ ctx.beginPath();ctx.arc(comX,comY,5.5,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#07121e';ctx.lineWidth=1.5;ctx.stroke();ctx.font='bold 11px ui-monospace,monospace';ctx.textAlign='left';ctx.fillStyle=color;ctx.fillText('CoM',comX+8,comY-7);
+ const angleDeg=Math.abs(st.dynamics.rotation)*180/Math.PI;const label=st.supportPoints.length?(st.shouldTip?`TIPPING ${st.tippingDirection.toUpperCase()}`:angleDeg>=18?`TILT ${angleDeg.toFixed(0)}° · CASCADING STRESS`:`STABILITY VECTOR · ${Math.round(st.stabilityMetric)}%`):'NO BASE SUPPORT';ctx.font='bold 10px ui-monospace,monospace';ctx.textAlign=st.shouldTip&&st.tippingDirection==='left'?'left':'left';ctx.fillText(label,GRID_LEFT+5,65);ctx.restore();
+}
+function validateDesign(){const a=refreshAnalysis();draw();if(!a.count){setStatus('Empty design. Place columns, beams and slabs before validating.');return}const detached=Object.values(sim.nodes).filter(n=>n.referenceLevel>0&&!n.isGroundConnected).length,st=sim.stability.primary,angleDeg=st?Math.abs(st.dynamics.rotation)*180/Math.PI:0,stabilityText=!st?'No assembly stability estimate available.':!st.supportPoints.length?'No foundation supports remain for the highlighted assembly.':st.shouldTip?`Center of mass lies ${Math.abs(st.marginWorld/STORY_HEIGHT).toFixed(2)} bay-widths outside the support span; predicted tipping is toward the ${st.tippingDirection}.`:angleDeg>=18?`Assembly tilt is ${angleDeg.toFixed(0)}°, above the 18° cascading-stress threshold; the current lean is toward the ${st.tippingDirection}.`:`Center-of-mass projection is within the support span (${Math.round(st.stabilityMetric)}% stability margin).`;const msg=a.issues.length||detached?`INSUFFICIENT SUPPORT · ${a.issues.length} static issue(s), ${detached} joint(s) without a continuous healthy path to the foundation. ${stabilityText} ${a.issues.slice(0,2).join(' ')}`:st?.shouldTip?`DIRECTIONAL TIPPING RISK · ${st.tippingDirection.toUpperCase()}. ${stabilityText}`:angleDeg>=18?`CASCADE RISK · TILT-INDUCED MEMBER STRESS IS ABOVE THE CRITICAL ANGLE. ${stabilityText}`:a.maxUtil>1?`OVER CAPACITY · Peak utilization ${(a.maxUtil*100).toFixed(0)}%. ${a.overloaded} member(s) exceed modeled capacity. ${stabilityText}`:`STRUCTURALLY SOUND IN THIS MODEL · Peak utilization ${(a.maxUtil*100).toFixed(0)}%. ${stabilityText}`;setStatus(a.failedMembers?`${msg} ${a.failedMembers} member(s) are failed or hinged and excluded from active capacity; detached failed members become debris.`:msg);if(a.warnings.length)setStatus(`Notes: ${a.warnings.slice(0,2).join(' ')}`,true);else setStatus('Validation includes local column load paths, capacity redistribution to connected neighboring supports, floating-cluster detection and member integrity. This remains a simplified educational estimate.',true)}
+function syncButtons(){document.querySelectorAll('[data-mode]').forEach(b=>{b.classList.toggle('active',b.dataset.mode===mode);b.setAttribute('aria-pressed',String(b.dataset.mode===mode))});$('liveDot').classList.toggle('running',sim.running);$('simulate').textContent=sim.running?'Ⅱ Pause':'▶ Simulate';$('simulate').setAttribute('aria-pressed',String(sim.running))}
+function startOrPause(){if(sim.running){sim.running=false;syncButtons();updateMetrics();return}if(!totalCount()&&!sim.debris.length){setStatus('Build at least one component before starting physics.');return}refreshAnalysis();sim.running=true;sim.peakUtil=lastAnalysis.maxUtil;syncButtons();setStatus('Simulation started. Local load redistribution, bending fracture, debris rigid-body motion, kinetic-energy/impulse transfer, material impact resistance, deformation, shattering and one-hop shockwave damage are active.',true);}
+function clearDesign(){if(!confirm('Clear all columns, beams, slabs and loads?'))return;BuildingMap=newBuildingMap();resetPhysics(false);setStatus('Empty design. Place columns, beams and slabs, then choose Validate.',false);setStatus('Design cleared. Build Mode is ready.',true)}
+function exampleFrame(){BuildingMap=newBuildingMap();for(const x of [2,5,8,11])for(let y=0;y<4;y++)BuildingMap.columns[keyOf(x,y)]=makeElement('column',x,y,'steel');for(let y=1;y<=4;y++)for(let x=2;x<11;x++){BuildingMap.beams[keyOf(x,y)]=makeElement('beam',x,y,'steel');BuildingMap.slabs[keyOf(x,y)]=makeElement('slab',x,y,'concrete')}for(const x of [4,7])BuildingMap.loads[keyOf(x,4)]={x,y:4,mass:2,capacity:0,integrity:1,failed:false,kind:'load'};resetPhysics(true);validateDesign();setStatus('Example frame loaded: four levels with mixed steel/concrete members and roof loads.',true)}
+function saveJSON(){const payload={format:'FrameLab BuildingMap',version:1,dimensions:{bays:NX,levels:NY,storyHeight:STORY_HEIGHT},materialLibrary:MATERIALS,BuildingMap};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='framelab-building-design.json';document.body.appendChild(a);a.click();a.remove();window.setTimeout(()=>URL.revokeObjectURL(url),1500);setStatus('Design JSON export created. This file includes the editable design and saved member state, but not a live simulation replay.',true)}
+function loadJSONFile(file){if(!file)return;if(file.size>10*1024*1024){setStatus('JSON import stopped: choose a file smaller than 10 MB.',true);return}const reader=new FileReader();reader.onload=()=>{try{const payload=JSON.parse(String(reader.result));if(payload.format&&payload.format!=='FrameLab BuildingMap')throw new Error('This file is not a FrameLab BuildingMap export.');const source=payload.BuildingMap||payload.buildingMap;if(!source||typeof source!=='object')throw new Error('No BuildingMap object was found.');const next=newBuildingMap();for(const group of ['columns','beams','slabs']){const input=source[group]||{};for(const [key,raw]of Object.entries(input)){const x=Number(raw.x),y=Number(raw.y),kind=group.slice(0,-1),mat=String(raw.material||'steel');if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||x>(kind==='column'?NX:NX-1)||y<(kind==='column'?0:1)||y>(kind==='column'?NY-1:NY)||!MATERIALS[mat])continue;const e=makeElement(kind,x,y,mat);e.mass=clamp(Number(raw.mass)||e.mass,.01,1000);e.capacity=clamp(Number(raw.capacity)||e.capacity,.01,10000);e.yieldStrength=e.capacity;e.momentCapacity=kind==='beam'?clamp(Number(raw.momentCapacity)||e.capacity*.42,.01,100000):0;e.integrity=clamp(Number(raw.integrity??1),0,1);e.failed=Boolean(raw.failed)||e.integrity<=0;e.snapped=Boolean(raw.snapped)&&!e.failed;e.snapSag=clamp(Number(raw.snapSag)||0,0,STORY_HEIGHT*.7);e.snapVelocity=clamp(Number(raw.snapVelocity)||0,0,3.2);e.snapCenterX=raw.snapCenterX!=null&&Number.isFinite(Number(raw.snapCenterX))?Number(raw.snapCenterX):null;e.snapLeft=Number.isFinite(Number(raw.snapLeft))?Number(raw.snapLeft):null;e.snapRight=Number.isFinite(Number(raw.snapRight))?Number(raw.snapRight):null;e.momentOverloadTime=clamp(Number(raw.momentOverloadTime)||0,0,10);e.impactResistance=clamp(Number(raw.impactResistance)||e.impactResistance,.1,4);e.durability=clamp(Number(raw.durability)||e.capacity*e.impactResistance*IMPACT_ENERGY_PER_CAPACITY,.1,100000);e.shattered=Boolean(raw.shattered);e.impactDamage=clamp(Number(raw.impactDamage)||0,0,.98);e.impactDeformation=clamp(Number(raw.impactDeformation)||0,0,1.5);e.impactStress=clamp(Number(raw.impactStress)||0,0,5);e.lastImpactEnergy=clamp(Number(raw.lastImpactEnergy)||0,0,1e9);e.state=e.failed?(e.shattered?'SHATTERED':'FAILED'):e.snapped?'SNAPPED':'intact';next[group][keyOf(x,y)]=e}}for(const [key,raw]of Object.entries(source.loads||{})){const x=Number(raw.x),y=Number(raw.y);if(Number.isInteger(x)&&Number.isInteger(y)&&x>=0&&x<NX&&y>=1&&y<=NY)next.loads[keyOf(x,y)]={x,y,mass:clamp(Number(raw.mass)||2,.01,100),capacity:0,integrity:clamp(Number(raw.integrity??1),0,1),failed:Boolean(raw.failed),kind:'load'}}BuildingMap=next;resetPhysics(false);for(const link of [...sim.memberLinks])if(link.e.failed&&!link.e.debrisSpawned)spawnMemberDebris(link,'loaded failed member');refreshAnalysis();draw();setStatus(`Loaded ${totalCount()} saved elements from ${file.name}; ${sim.debris.length} failed member(s) restored as debris.`,true);setStatus('Design imported. Live estimates refreshed; select Validate for a written structural check.',false)}catch(err){setStatus(`Could not load JSON: ${err.message}`)}};reader.readAsText(file)}
+function animate(now){const elapsed=Math.min(.05,Math.max(0,(now-previous)/1000));previous=now;if(sim.running){let remaining=elapsed;while(remaining>0){const dt=Math.min(DT,remaining);stepPhysics(dt);remaining-=dt}if((frame++%4)===0){refreshAnalysis();updateMetrics()}}draw();requestAnimationFrame(animate)}
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
+document.addEventListener('keydown',e=>{
+ const target=e.target,tag=(target?.tagName||'').toLowerCase();
+ if(target?.isContentEditable||['input','select','textarea'].includes(tag)||e.altKey||e.ctrlKey||e.metaKey)return;
+ if(e.code==='Space'&&tag==='button')return; // Let native button activation handle Space.
+ const key=e.key.toLowerCase();
+ if(key==='b'){e.preventDefault();setMode('build')}
+ else if(key==='d'){e.preventDefault();setMode('demolish')}
+ else if(key==='l'){e.preventDefault();setMode('load')}
+ else if(key==='p'){e.preventDefault();setMode('push')}
+ else if(key==='v'){e.preventDefault();validateDesign()}
+ else if(e.code==='Space'){e.preventDefault();startOrPause()}
+ else if(e.key==='Escape'){dragging=false;lastDragKey='';lastDragPt=null;hover.valid=false;draw()}
+});$('componentType').addEventListener('change',updateToolStatus);$('loadAmount').addEventListener('input',()=>{$('loadOut').textContent=Number($('loadAmount').value).toFixed(1)});$('displayMode').addEventListener('change',draw);$('validate').addEventListener('click',validateDesign);$('simulate').addEventListener('click',startOrPause);$('resetPhysics').addEventListener('click',()=>{resetPhysics(true);setStatus('Physics reset. Member integrity and joint motion were restored; the design layout was preserved.',true);setStatus('Physics reset. Run Validate for a fresh written assessment of the restored design.',false)});$('example').addEventListener('click',exampleFrame);$('clear').addEventListener('click',clearDesign);$('save').addEventListener('click',saveJSON);$('loadJson').addEventListener('click',()=>$('fileInput').click());$('fileInput').addEventListener('change',e=>{loadJSONFile(e.target.files?.[0]);e.target.value=''});canvas.addEventListener('pointerdown',handleCanvasDown);canvas.addEventListener('pointermove',handlePointerMove);canvas.addEventListener('pointerup',handlePointerUp);canvas.addEventListener('pointercancel',handlePointerUp);canvas.addEventListener('pointerleave',()=>{if(!dragging){hover.valid=false;draw()}});$('loadOut').textContent=Number($('loadAmount').value).toFixed(1);setMode('build');refreshAll();syncButtons();requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>
